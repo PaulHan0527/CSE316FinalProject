@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { REGISTER } from '../../cache/mutations';
+import { UPDATE_ACCOUNT } from '../../cache/mutations';
 import { useMutation } from '@apollo/client';
 
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
 
-const CreateAccount = (props) => {
+const UpdateAccount = (props) => {
 	const [input, setInput] = useState({ email: '', password: '', name: '' });
 	const [loading, toggleLoading] = useState(false);
-	const [Register] = useMutation(REGISTER);
+	const [UpdateAccount] = useMutation(UPDATE_ACCOUNT);
 
 
 	const updateInput = (e) => {
@@ -16,14 +16,14 @@ const CreateAccount = (props) => {
 		setInput(updated);
 	};
 
-	const handleCreateAccount = async (e) => {
+	const handleUpdateAccount = async (e) => {
 		for (let field in input) {
 			if (!input[field]) {
 				alert('All fields must be filled out to register');
 				return;
 			}
 		}
-		const { loading, error, data } = await Register({ variables: { ...input } });
+		const { loading, error, data } = await UpdateAccount({ variables: { ...input } });
 		if (loading) { toggleLoading(true) };
 		if (error) { return `Error: ${error.message}` };
 		if (data) {
@@ -34,25 +34,24 @@ const CreateAccount = (props) => {
 			else {
 				props.fetchUser();
 			}
-			props.setShowCreate(false);
+			props.setShowUpdate(false);
 
 		};
 	};
 
 	return (
-		<WModal className="signup-modal" cover="true" visible={props.setShowCreate} animation='slide-fade-top'>
-			<WMHeader className="modal-header" onClose={() => props.setShowCreate(false)}>
-				Create A New Account
+		<WModal className="signup-modal" cover="true" visible={props.setShowUpdate} animation='slide-fade-top'>
+			<WMHeader className="modal-header" onClose={() => props.setShowUpdate(false)}>
+				Update Account Information
 			</WMHeader>
 
 			{
 				loading ? <div />
 					: <WMMain className='modal-main'>
 
-
 						<WInput
 							className="modal-input" onBlur={updateInput} name="name" labelAnimation="up"
-							barAnimation="solid" labelText="Name" wType="outlined" inputType="text" color='white'
+							barAnimation="solid" labelText="Name" wType="outlined" inputType="text"
 						/>
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput
@@ -64,19 +63,17 @@ const CreateAccount = (props) => {
 							className="modal-input" onBlur={updateInput} name="password" labelAnimation="up"
 							barAnimation="solid" labelText="Password" wType="outlined" inputType="password"
 						/>
-						<div className="modal-spacer">&nbsp;</div>
-
 						<WRow className="modal-buttons-row">
 							<WCol size='1.5'></WCol>
 							<WCol size='4'>
-								<WButton className="modal-button" onClick={handleCreateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
-									Create Account
+								<WButton className="modal-button" onClick={handleUpdateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
+									Update Account
 								</WButton>
 							</WCol>
 
 							<WCol size='1'></WCol>
 							<WCol size='4'>
-								<WButton className="modal-button cancel-button" onClick={() => props.setShowCreate(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
+								<WButton className="modal-button cancel-button" onClick={() => props.setShowUpdate(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
 									Cancel
 								</WButton>
 							</WCol>
@@ -84,9 +81,8 @@ const CreateAccount = (props) => {
 						</WRow>
 					</WMMain>
 			}
-
 		</WModal>
 	);
 }
 
-export default CreateAccount;
+export default UpdateAccount;

@@ -1,6 +1,6 @@
-import React, { useState } 	from 'react';
-import { LOGIN } 			from '../../cache/mutations';
-import { useMutation }    	from '@apollo/client';
+import React, { useState } from 'react';
+import { LOGIN } from '../../cache/mutations';
+import { useMutation } from '@apollo/client';
 
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WCol, WRow } from 'wt-frontend';
 
@@ -27,7 +27,7 @@ const Login = (props) => {
 		}
 		if (data) {
 			props.fetchUser();
-			props.reloadTodos();
+			// props.reloadTodos();
 			toggleLoading(false)
 			props.setShowLogin(false)
 		};
@@ -35,14 +35,14 @@ const Login = (props) => {
 
 
 	return (
-		<WModal className="login-modal" cover="true" visible={props.setShowLogin}>
-			<WMHeader  className="modal-header" onClose={() => props.setShowLogin(false)}>
+		<WModal className="login-modal" cover="true" visible={props.setShowLogin} animation='slide-fade-top'>
+			<WMHeader className="modal-header" onClose={() => props.setShowLogin(false)}>
 				Login
 			</WMHeader >
 
 			{
 				loading ? <div />
-					: <WMMain className="main-login-modal">
+					: <WMMain className="modal-main">
 
 						<WInput className="modal-input" onBlur={updateInput} name='email' labelAnimation="up" barAnimation="solid" labelText="Email Address" wType="outlined" inputType='text' />
 						<div className="modal-spacer">&nbsp;</div>
@@ -54,24 +54,23 @@ const Login = (props) => {
 							</div>
 								: <div className='modal-error'>&nbsp;</div>
 						}
-
+						<WRow>
+						<WCol size='1.5'></WCol>
+							<WCol size="4">
+								<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
+									Login
+								</WButton>
+							</WCol>
+							<WCol size='1'></WCol>
+							<WCol size='4'>
+								<WButton className="modal-button cancel-button" onClick={() => props.setShowLogin(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
+									Cancel
+								</WButton>
+							</WCol>
+							<WCol size='1.5'></WCol>
+						</WRow>
 					</WMMain >
 			}
-			<WMFooter>
-				<WRow>
-					<WCol size="6">
-						<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
-							Login
-						</WButton>
-					</WCol>
-					
-					<WCol size='6'>
-						<WButton className="modal-button cancel-button" onClick={() => props.setShowLogin(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="accent">
-							Cancel
-				</WButton>
-					</WCol>
-				</WRow>
-			</WMFooter>
 		</WModal >
 	);
 }

@@ -1,5 +1,5 @@
 @use 'node_modules/wt-frontend/build/global/theme' with (
-    $primary-color: #ffc800,
+    $primary-color: #5e5e5e,
     $background-color: rgb(64, 69, 78),//#d9d6cc,
     $navbar-background-color: #353a44,//rgb(64, 69, 78),
     $sidebar-background-color: #2b2e36,//#353a44,
@@ -55,55 +55,17 @@ html, body {
     background-color: $background-color;
 }
 
-.complete-task {
-    color: var(--light-blue);
-}
-
-.incomplete-task {
-    color: $primary-color;
-}
-
-.complete-task-assignedTo {
-    color: var(--blue-slate-darker);
-}
-
-.incomplete-task-assignedTo {
-    color: var(--warning-color);
-}
-
-.incomplete-task {
-    color: $primary-color;
-}
-
-.list-item-active {
-    color: $primary-color;
-    font-weight: bold;
-
-}
-
-.list-item {
-    cursor: pointer;
-    transition: 0.05s ease-in-out;
-
-}
-.list-item:hover {
-    background-color: var(--warm-white-transparent);
-
-}
-
-
-
-.list-item-edit-input, .table-input {
-    font-size: 1.125rem !important;
-}
 
 .logo {
-	color: $primary-color;
+	color: rgb(255, 145, 0);
     font-size: 1.5rem;
     font-family: "Roboto Mono", monospace;
-    text-transform: uppercase;
     font-weight: bold;
 } 
+
+.navbar {
+    background-color: black;
+}
 
 .modal-error {
     color: $primary-color;
@@ -114,101 +76,16 @@ html, body {
     color: $primary-color;
 }
 
-.sidebar-header {
-    border-bottom: 2px dotted;
-}
-
-.sidebar-buttons-disabled {
-    cursor: default;
-    transition: 0.1s ease-in-out;
-    color: var(--warm-black);
-    background-color: #40454e;
-}
-
-.sidebar-header-name {
-    font-size: 1.375rem;
-    font-weight: bold;
-    padding: 0;
-    color: $text-color;
-}
-
-.table-entries {
-    scrollbar-width: thin;
-}
-
-.table-entries::-webkit-scrollbar, .wsidebar::-webkit-scrollbar {
-	width: 5px;
-	height: 8px;
-	background-color: var(--darkblue-gray); 
-}
-.table-entries::-webkit-scrollbar-thumb .wsidebar::-webkit-scrollbar-thumb {
-	width: 5px;
-	height: 8px;
-	background-color: var(--blue-gray); 
-}
-
-.table-entry {
-    border-bottom: 1px solid;
-    color: $text-color;
-    transition: 0.05s ease-in-out;
-    height: 46px;
-}
-
-.table-entry:hover {
-    background-color: var(--warm-white-transparent);
-}
-
-.table-header-button {
-    transition: 0.1s ease-in-out;
-    color: var(--light-gray);
-}
-
-.table-header-button-disabled {
-    transition: 0.1s ease-in-out;
-    color: var(--warm-black);
-}
-
-.table-header {
-    border-bottom: 2px $text-color dotted;
-}
-
-.table-header-section {
-    font-size: 1.375rem;
-    font-weight: bold;
-    color: $text-color;
-}
-
-.table-header-section:hover {
-    transition: 0.1s ease-in-out;
-    cursor: pointer;
-    background-color: var(--deep-blue-lighter);
-}
-
-.table-input {
-    /*background-color: var(--deep-blue-lighter);
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    border-bottom: 1px solid;
-    margin: 0;
-    padding:0;
-    font-family: 'Roboto';
-    font-size: 14px;
-    color: var(--light-gray);*/
-}
-
-.table-select {
-    font-family: Roboto;
-    //font-size: 14px;
-    font-size: 1.125rem;
-    border: none;
-    background-color: var(--deep-blue-lighter);
-    color: var(--light-gray);
-}
-
 .modal-header {
+    background-color: red;
     color: $text-color;
-    font-size: 28px;
+    font-size: 20px;
+    width: auto;
+}
+
+.modal-main {
+    background-color: black;
+    color:rgba(255,255,255, 0.7)
 }
 
 .navbar-options {
@@ -221,19 +98,3 @@ html, body {
     color:#f13564;
 }
 
-.cancel-button {
-    color: $text-color;
-}
-
-.undo-redo {
-    color: $text-color;
-}
-
-.table-entry-buttons {
-    color: $text-color;
-}
-
-.table-entry-buttons-disabled {
-    color: var(--warm-black);
-    cursor: default;
-}
