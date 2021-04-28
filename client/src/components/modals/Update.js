@@ -1,0 +1,90 @@
+import React, { useState } from 'react';
+import { UPDATE_ACCOUNT } from '../../cache/mutations';
+import { useMutation } from '@apollo/client';
+
+import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
+
+const UpdateAccount = (props) => {
+	const [input, setInput] = useState({ email: '', password: '', name: '' });
+	const [loading, toggleLoading] = useState(false);
+	const [UpdateAccount] = useMutation(UPDATE_ACCOUNT);
+
+
+	const updateInput = (e) => {
+		const { name, value } = e.target;
+		const updated = { ...input, [name]: value };
+		setInput(updated);
+	};
+
+	const handleUpdateAccount = async (e) => {
+		// for (let field in input) {
+		// 	if (!input[field]) {
+		// 		alert('All fields must be filled out to register');
+		// 		return;
+		// 	}
+		// }
+		// const { loading, error, data } = await Update({ variables: { ...input } });
+		// if (loading) { toggleLoading(true) };
+		// if (error) { return `Error: ${error.message}` };
+		// if (data) {
+		// 	console.log(data)
+		// 	toggleLoading(false);
+		// 	props.fetchUser();
+			
+		// 	props.setShowUpdate(false);
+
+		// };
+	};
+
+	return (
+		<WModal className="signup-modal" cover="true" visible={props.setShowCreate}>
+			<WMHeader className="modal-header" onClose={() => props.setShowUpdate(false)}>
+				Update Account Information
+			</WMHeader>
+
+			{
+				loading ? <div />
+					: <WMMain>
+						<WRow className="modal-col-gap signup-modal">
+							<WCol size="12">
+								<WInput
+									className="modal-input" onBlur={updateInput} name="name" labelAnimation="up"
+									barAnimation="solid" labelText="Name" wType="outlined" inputType="text"
+								/>
+							</WCol>
+						</WRow>
+
+						<div className="modal-spacer">&nbsp;</div>
+						<WInput
+							className="modal-input" onBlur={updateInput} name="email" labelAnimation="up"
+							barAnimation="solid" labelText="Email Address" wType="outlined" inputType="text"
+						/>
+						<div className="modal-spacer">&nbsp;</div>
+						<WInput
+							className="modal-input" onBlur={updateInput} name="password" labelAnimation="up"
+							barAnimation="solid" labelText="Password" wType="outlined" inputType="password"
+						/>
+					</WMMain>
+			}
+			<WMFooter>
+				<WRow>
+					<WCol size="6">
+						<WButton className="modal-button" onClick={handleUpdateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="primary">
+							Update
+						</WButton>
+					</WCol>
+					
+					<WCol size='6'>
+						<WButton className="modal-button cancel-button" onClick={() => props.setShowUpdate(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="accent">
+							Cancel
+				</WButton>
+					</WCol>
+				</WRow>
+
+			</WMFooter>
+
+		</WModal>
+	);
+}
+
+export default UpdateAccount;
