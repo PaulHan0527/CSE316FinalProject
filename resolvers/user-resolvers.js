@@ -72,33 +72,23 @@ module.exports = {
 			return user;
 		},
 		update: async (_, args, { res }) => {
-			const { email, password, name } = args;
-			const alreadyRegistered = await User.findOne({email: email});
+			const { email, password, name, id } = args;
+			const user = await User.findById(id);
+			const alreadyRegistered = await User.findOne({ $and: [ {email: email}, {_id: {$ne: id}}] });
 			if(alreadyRegistered) {
-				console.log('User with that email already registered.');
-				return(new User({
-					_id: '',
-					name: '',
-					email: 'already exists', 
-					password: ''
-				}));
+				// return alreadyRegistered;
+				return new User({_id: '',
+				name: '',
+				email: 'already exists', 
+				password: ''});
 			}
 			const hashed = await bcrypt.hash(password, 10);
-			const _id = new ObjectId();
-			const user = new User({
-				_id: _id,
-				name: name,
-				email: email, 
-				password: hashed
-			})
-			const saved = await user.save();
-			// After registering the user, their tokens are generated here so they
-			// are automatically logged in on account creation.
+			const updated = await user.update({name: name, email:email, password:hashed});
 			const accessToken = tokens.generateAccessToken(user);
 			const refreshToken = tokens.generateRefreshToken(user);
 			res.cookie('refresh-token', refreshToken, { httpOnly: true , sameSite: 'None', secure: true}); 
 			res.cookie('access-token', accessToken, { httpOnly: true , sameSite: 'None', secure: true}); 
-			return user;
+			return updated;
 		},
 		/** 
 			@param 	 {object} res - response object containing the current access/refresh tokens  

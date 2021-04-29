@@ -6,7 +6,6 @@ import { WButton, WNavItem } from 'wt-frontend';
 const LoggedIn = (props) => {
     const client = useApolloClient();
     const [Logout] = useMutation(LOGOUT);
-    const [UpdateAccount] = useMutation(UPDATE_ACCOUNT);
     const handleLogout = async (e) => {
         Logout();
         const { data } = await props.fetchUser();

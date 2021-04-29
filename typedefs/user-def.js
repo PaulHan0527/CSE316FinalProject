@@ -15,7 +15,7 @@ const typeDefs = gql `
 		login(email: String!, password: String!): User
 		register(email: String!, password: String!, name: String!): User
 		logout: Boolean!
-		update(email: String!, password: String!, name: String!) : User
+		update(email: String!, password: String!, name: String!, id: String!) : User
 	}
 `;
 

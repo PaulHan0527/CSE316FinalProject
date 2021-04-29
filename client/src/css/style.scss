@@ -63,8 +63,43 @@ html, body {
     font-weight: bold;
 } 
 
+.globeImage {
+    position: relative;
+    text-align: center;
+    justify-content: center;
+    align-items:center;
+    margin: auto;
+    width: 40%;
+}
+
+.welcome-text {
+    display: inline;
+    color: white;
+    justify-content: center;
+    font-size: xx-large;
+    font-weight: bold;
+}
+
 .navbar {
     background-color: black;
+}
+
+.firstMapPage {
+    background-color: rgb(128, 118, 118);
+    position: relative;
+    text-align: center;
+    justify-content: center;
+    align-items:center;
+    margin: auto;
+    width: 70%;
+    height: 70%;
+}
+
+.firstMapPageHeader {
+    width: 100%;
+    height: 10%;
+    background-color: black;
+    color:var(--light-gray);
 }
 
 .modal-error {

@@ -5,7 +5,7 @@ import { useMutation } from '@apollo/client';
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
 
 const UpdateAccount = (props) => {
-	const [input, setInput] = useState({ email: '', password: '', name: '' });
+	const [input, setInput] = useState({ email: '', password: '', name: '', id: props.userInfo._id });
 	const [loading, toggleLoading] = useState(false);
 	const [UpdateAccount] = useMutation(UPDATE_ACCOUNT);
 
@@ -19,7 +19,7 @@ const UpdateAccount = (props) => {
 	const handleUpdateAccount = async (e) => {
 		for (let field in input) {
 			if (!input[field]) {
-				alert('All fields must be filled out to register');
+				alert('All fields must be filled out to update');
 				return;
 			}
 		}
@@ -28,46 +28,47 @@ const UpdateAccount = (props) => {
 		if (error) { return `Error: ${error.message}` };
 		if (data) {
 			toggleLoading(false);
-			if (data.register.email === 'already exists') {
-				alert('User with that email already registered');
+			if(data.update.email === 'already exists') {
+				alert('User with that email already exists')
 			}
 			else {
 				props.fetchUser();
+				props.setShowUpdate(false);
 			}
-			props.setShowUpdate(false);
-
-		};
+			return
+		}
 	};
 
+
 	return (
-		<WModal className="signup-modal" cover="true" visible={props.setShowUpdate} animation='slide-fade-top'>
+		<WModal className="update-modal" cover="true" visible={props.setShowUpdate} animation='slide-fade-top'>
 			<WMHeader className="modal-header" onClose={() => props.setShowUpdate(false)}>
 				Update Account Information
 			</WMHeader>
 
 			{
 				loading ? <div />
-					: <WMMain className='modal-main'>
+					:
+					<WMMain className='modal-main'>
 
 						<WInput
-							className="modal-input" onBlur={updateInput} name="name" labelAnimation="up"
-							barAnimation="solid" labelText="Name" wType="outlined" inputType="text"
+							className="modal-input" onBlur={updateInput} name="name" wType="outlined" labelText = 'Name' labelAnimation='fixed' placeholderText={props.userInfo.name} barAnimation='border-highlight' inputType="text"
 						/>
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput
-							className="modal-input" onBlur={updateInput} name="email" labelAnimation="up"
-							barAnimation="solid" labelText="Email Address" wType="outlined" inputType="text"
+							className="modal-input" onBlur={updateInput} name="email" wType="outlined" labelText = 'Email' labelAnimation='fixed' placeholderText={props.userInfo.email} barAnimation='border-highlight' inputType="text"
 						/>
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput
-							className="modal-input" onBlur={updateInput} name="password" labelAnimation="up"
-							barAnimation="solid" labelText="Password" wType="outlined" inputType="password"
+							className="modal-input" onBlur={updateInput} name="password" wType="outlined" labelText = 'Password' labelAnimation='fixed' barAnimation='border-highlight' inputType="password"
 						/>
+						<div className="modal-spacer">&nbsp;</div>
+
 						<WRow className="modal-buttons-row">
 							<WCol size='1.5'></WCol>
 							<WCol size='4'>
 								<WButton className="modal-button" onClick={handleUpdateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
-									Update Account
+									Update
 								</WButton>
 							</WCol>
 

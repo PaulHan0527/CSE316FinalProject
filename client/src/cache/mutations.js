@@ -22,11 +22,12 @@ export const REGISTER = gql`
 `;
 
 export const UPDATE_ACCOUNT = gql`
-	mutation Update($email: String!, $password: String!, $name: String!) {
-		update(email: $email, password: $password, name: $name) {
+	mutation Update($email: String!, $password: String!, $name: String!, $id: String!) {
+		update(email: $email, password: $password, name: $name, id: $id) {
 			email
 			password
 			name
+			_id
 		}
 	}
 

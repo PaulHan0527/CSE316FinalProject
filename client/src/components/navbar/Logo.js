@@ -1,5 +1,6 @@
 import React from 'react';
 import { WButton, WNavItem } from 'wt-frontend';
+import Homescreen from '../homescreen/Homescreen';
 
 const Logo = (props) => {
     return (
