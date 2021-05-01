@@ -1,6 +1,6 @@
 const { gql } = require('apollo-server');
 const userDef = require('./user-def').typeDefs;
-// const todolistDef = require('./todolist-def').typeDefs;
+const regionDef = require('./region-def').typeDefs;
 
 const rootDef = gql`
 	type Query {
@@ -13,8 +13,5 @@ const rootDef = gql`
 `;
 
 module.exports = {
-	typeDefs: [rootDef, userDef] 
+	typeDefs: [rootDef, userDef, regionDef] 
 }; 
-// module.exports = {
-// 	typeDefs: [rootDef, userDef, todolistDef] 
-// }; 

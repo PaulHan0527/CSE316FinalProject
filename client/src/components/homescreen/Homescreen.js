@@ -1,17 +1,21 @@
 import Logo from '../navbar/Logo';
 import Login from '../modals/Login';
 import globeImage from '../../utils/globeImage.png';
+
+import MapPageContents from '../firstMapPage/MapPageContents'
+
 // import Delete 							from '../modals/Delete';
 import UpdateAccount from '../modals/UpdateAccount';
-// import MainContents 					from '../main/MainContents';
+import CreateRegion from '../modals/CreateRegion';
+
 import CreateAccount from '../modals/CreateAccount';
 import NavbarOptions from '../navbar/NavbarOptions';
 import * as mutations from '../../cache/mutations';
-// import SidebarContents 					from '../sidebar/SidebarContents';
-// import { GET_DB_TODOS } 				from '../../cache/queries';
+import { GET_DB_REGIONS } from '../../cache/queries';
+
 import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import { WNavbar, WSidebar, WNavItem, WCol, WRow } from 'wt-frontend';
+import { WNavbar, WSidebar, WNavItem, WCol, WRow, WButton, WInput } from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide, WCard, WCMedia } from 'wt-frontend';
 import WLFooter from 'wt-frontend/build/components/wlayout/WLFooter';
 // import { UpdateListField_Transaction, 
@@ -49,9 +53,24 @@ const Homescreen = (props) => {
 	const [showLogin, toggleShowLogin] = useState(false);
 	const [showCreate, toggleShowCreate] = useState(false);
 	const [showUpdate, toggleShowUpdate] = useState(false);
+	const [showCreateRegion, toggleShowCreateRegion] = useState(false);
 	const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo());
 	const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo());
 
+	const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS);
+
+	let rootRegions = [];
+	if (loading) { console.log(loading, 'loading'); }
+	if (error) { console.log(error, 'error'); }
+	if (data) {
+		rootRegions = data.getRootRegions;
+	}
+
+	const loadRootRegions = (regions) => {
+		
+	}
+
+	
 	// const { loading, error, data, refetch } = useQuery(GET_DB_TODOS);
 
 	// if(loading) { console.log(loading, 'loading'); }
@@ -125,6 +144,27 @@ const Homescreen = (props) => {
 			setCanUndo(props.tps.hasTransactionToUndo());
 			setCanRedo(props.tps.hasTransactionToRedo());
 		}
+	}
+	const [AddRegion] = useMutation(mutations.ADD_REGION);
+
+	const createNewRootRegion = async (name) => {
+		let region = {
+			_id: '',
+			name: name,
+			capital: '',
+			leader: '',
+			landmarks: [],
+			parentId: 'root',
+			owner: props.user._id,
+			rootRegion: true
+		}
+		console.log(region)
+		const { data } = await AddRegion({variables: { region: region}, refetchQueries: [{query: GET_DB_REGIONS}]});
+		
+	}
+
+	const updateRootRegion = async () => {
+
 	}
 
 	// const addItem = async () => {
@@ -216,14 +256,18 @@ const Homescreen = (props) => {
 		// toggleShowDelete(false);
 		toggleShowCreate(false);
 		toggleShowUpdate(false);
+		toggleShowCreateRegion(false);
 		toggleShowLogin(!showLogin);
+		
 	};
 
 	const setShowCreate = () => {
 		// toggleShowDelete(false);
 		toggleShowLogin(false);
 		toggleShowUpdate(false);
+		toggleShowCreateRegion(false);
 		toggleShowCreate(!showCreate);
+		
 	};
 
 	// const setShowDelete = () => {
@@ -237,7 +281,17 @@ const Homescreen = (props) => {
 		toggleShowCreate(false);
 		// toggleShowDelete(false);
 		toggleShowLogin(false);
+		toggleShowCreateRegion(false);
 		toggleShowUpdate(!showUpdate);
+		
+	}
+
+	const setShowCreateRegion = () => {
+		toggleShowCreate(false);
+		// toggleShowDelete(false);
+		toggleShowLogin(false);
+		toggleShowUpdate(false);
+		toggleShowCreateRegion(!showCreateRegion);
 	}
 
 	// const sort = (criteria) => {
@@ -249,8 +303,8 @@ const Homescreen = (props) => {
 	// 	tpsRedo();
 
 	// }
-	console.log(auth);
 
+	
 	return (
 		<WLayout wLayout="header">
 			<WLHeader>
@@ -272,32 +326,58 @@ const Homescreen = (props) => {
 
 			{
 				auth ?
-
 					<div className="container-secondary">
-						
 						<WLMain className="firstMapPage">
-							<WLayout>
+							<WLayout wLayout='header-footer'>
 								<WLHeader className='firstMapPageHeader'>
-									Your maps
+									{userInfo.name}'s maps
 								</WLHeader>
+								<WRow>
+									<WCol size='6'>
+									<MapPageContents
+										userInfo={userInfo}
+										auth={auth}
+										rootRegions={rootRegions}
+										createNewRootRegion={createNewRootRegion}
+										updateRootRegion={updateRootRegion}
+
+									/>
+									</WCol>
+									<WCol size ='6'>
+										<img src={globeImage} />
+									</WCol>
+								</WRow>
+
+								<WLFooter>
+									<WRow>
+										<WCol size='6'>
+										</WCol>
+
+										<WCol size='6'>
+											<WButton className='create-button' onClick={() => {setShowCreateRegion()}}>Create New Map</WButton>
+										</WCol>
+									</WRow>
+								</WLFooter>
 							</WLayout>
 						</WLMain>
 					</div>
 					:
 					<div className="container-secondary">
-					<WLMain className='globeImage'>
-						<WRow>
-							<WCol size='12'>
-							<img src={globeImage} />
+						<WLMain className='globeImage'>
+							<WRow>
+								<WCol size='12'>
+									<img src={globeImage} />
+								</WCol>
+							</WRow>
+							<div className="modal-spacer">&nbsp;</div>
+							<div className="modal-spacer">&nbsp;</div>
+							<WRow>
+								<WCol size='12' className='welcome-text'>
+									Welcome To The World Data Mapper
 							</WCol>
-						</WRow>
-						<WRow>
-							<WCol size='12' className='welcome-text'>
-							Welcome To the World Data Mapper
-							</WCol>
-							
-						</WRow>
-					</WLMain>\
+
+							</WRow>
+						</WLMain>
 					</div>
 			}
 
@@ -349,6 +429,10 @@ const Homescreen = (props) => {
 
 			{
 				showUpdate && (<UpdateAccount userInfo={userInfo} fetchUser={props.fetchUser} setShowUpdate={setShowUpdate} />)
+			}
+
+			{
+				showCreateRegion && (<CreateRegion fetchUser={props.fetchUser} createNewRootRegion={createNewRootRegion} setShowCreateRegion={setShowCreateRegion} />)
 			}
 
 		</WLayout>

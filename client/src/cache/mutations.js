@@ -38,3 +38,17 @@ export const LOGOUT = gql`
 	}
 `;
 
+export const ADD_REGION = gql`
+	mutation AddRegion($region: RegionInput!) {
+		addRegion(region: $region) {
+			_id
+			name
+			capital
+			leader
+			landmarks
+			parentId
+			owner
+			rootRegion
+		}
+	}
+`
