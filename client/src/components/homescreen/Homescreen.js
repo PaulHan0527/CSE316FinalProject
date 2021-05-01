@@ -3,8 +3,6 @@ import Login from '../modals/Login';
 import globeImage from '../../utils/globeImage.png';
 
 import MapPageContents from '../firstMapPage/MapPageContents'
-
-// import Delete 							from '../modals/Delete';
 import UpdateAccount from '../modals/UpdateAccount';
 import CreateRegion from '../modals/CreateRegion';
 
@@ -15,9 +13,11 @@ import { GET_DB_REGIONS } from '../../cache/queries';
 
 import React, { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { WNavbar, WSidebar, WNavItem, WCol, WRow, WButton, WInput } from 'wt-frontend';
 import { WLayout, WLHeader, WLMain, WLSide, WCard, WCMedia } from 'wt-frontend';
 import WLFooter from 'wt-frontend/build/components/wlayout/WLFooter';
+import { useHistory } from 'react-router-dom';
 // import { UpdateListField_Transaction, 
 // 	SortItems_Transaction,
 // 	UpdateListItems_Transaction, 
@@ -41,7 +41,9 @@ const Homescreen = (props) => {
 	document.onkeydown = keyCombination;
 
 	const auth = props.user === null ? false : true;
+	let history = useHistory();
 	let userInfo;
+	
 	if (auth) {
 		userInfo = props.user;
 	}
@@ -50,27 +52,29 @@ const Homescreen = (props) => {
 	// const [sortRule, setSortRule] = useState('unsorted'); // 1 is ascending, -1 desc
 	// const [activeList, setActiveList] 		= useState({});
 	// const [showDelete, toggleShowDelete] 	= useState(false);
+	const [activeRegion, setActiveRegion] = useState({});
+	const [firstMapPage, setFirstMapPage] = useState(true);
 	const [showLogin, toggleShowLogin] = useState(false);
 	const [showCreate, toggleShowCreate] = useState(false);
 	const [showUpdate, toggleShowUpdate] = useState(false);
 	const [showCreateRegion, toggleShowCreateRegion] = useState(false);
+	
 	const [canUndo, setCanUndo] = useState(props.tps.hasTransactionToUndo());
 	const [canRedo, setCanRedo] = useState(props.tps.hasTransactionToRedo());
 
 	const { loading, error, data, refetch } = useQuery(GET_DB_REGIONS);
 
 	let rootRegions = [];
+	let rootRegionsData = [];
 	if (loading) { console.log(loading, 'loading'); }
 	if (error) { console.log(error, 'error'); }
 	if (data) {
 		rootRegions = data.getRootRegions;
+		for(let root of rootRegions) {
+			rootRegionsData.push({_id: root._id, name: root.name})
+		}
 	}
 
-	const loadRootRegions = (regions) => {
-		
-	}
-
-	
 	// const { loading, error, data, refetch } = useQuery(GET_DB_TODOS);
 
 	// if(loading) { console.log(loading, 'loading'); }
@@ -97,13 +101,11 @@ const Homescreen = (props) => {
 
 
 	// NOTE: might not need to be async
-	// const reloadList = async () => {
-	// 	if (activeList._id) {
-	// 		let tempID = activeList._id;
-	// 		let list = todolists.find(list => list._id === tempID);
-	// 		setActiveList(list);
-	// 	}
-	// }
+	const reloadRegion = async () => {
+		if (auth) {
+			console.log('reload region called')		
+		}
+	}
 
 	// const loadTodoList = (list) => {
 	// 	props.tps.clearAllTransactions();
@@ -113,11 +115,11 @@ const Homescreen = (props) => {
 
 	// }
 
-	// const mutationOptions = {
-	// 	refetchQueries: [{ query: GET_DB_TODOS }], 
-	// 	awaitRefetchQueries: true,
-	// 	onCompleted: () => reloadList()
-	// }
+	const mutationOptions = {
+		refetchQueries: [{ query: GET_DB_REGIONS }], 
+		awaitRefetchQueries: true,
+		onCompleted: () => reloadRegion()
+	}
 
 	// const [ReorderTodoItems] 		= useMutation(mutations.REORDER_ITEMS, mutationOptions);
 	// const [sortTodoItems] 		= useMutation(mutations.SORT_ITEMS, mutationOptions);
@@ -146,6 +148,7 @@ const Homescreen = (props) => {
 		}
 	}
 	const [AddRegion] = useMutation(mutations.ADD_REGION);
+	const [DeleteRegion] = useMutation(mutations.DELETE_REGION);
 
 	const createNewRootRegion = async (name) => {
 		let region = {
@@ -158,284 +161,180 @@ const Homescreen = (props) => {
 			owner: props.user._id,
 			rootRegion: true
 		}
-		console.log(region)
-		const { data } = await AddRegion({variables: { region: region}, refetchQueries: [{query: GET_DB_REGIONS}]});
-		
+		const { data } = await AddRegion({ variables: { region: region }, refetchQueries: [{ query: GET_DB_REGIONS }] });
+		if (data) {
+			
+			console.log(data);
+			// load it and go to region spreadsheet
+			// loadRegion(data.addRegion);
+		}
 	}
 
 	const updateRootRegion = async () => {
-
+		
 	}
 
-	// const addItem = async () => {
-	// 	let list = activeList;
-	// 	const items = list.items;
-	// 	const newItem = {
-	// 		_id: '',
-	// 		description: 'No Description',
-	// 		due_date: 'No Date',
-	// 		assigned_to: 'No One',
-	// 		completed: false
-	// 	};
-	// 	let opcode = 1;
-	// 	let itemID = newItem._id;
-	// 	let listID = activeList._id;
-	// 	let transaction = new UpdateListItems_Transaction(listID, itemID, newItem, opcode, AddTodoItem, DeleteTodoItem);
-	// 	props.tps.addTransaction(transaction);
-	// 	tpsRedo();
-	// };
+	const deleteRootRegion = async (_id) => {
+		const { data } = await DeleteRegion({ variables: {_id: _id}, refetchQueries: [{ query: GET_DB_REGIONS }] });
+		if(data) {
+			refetch();
+		}	
+	}
+	
 
-	// const deleteItem = async (item, index) => {
-	// 	let listID = activeList._id;
-	// 	let itemID = item._id;
-	// 	let opcode = 0;
-	// 	let itemToDelete = {
-	// 		_id: item._id,
-	// 		description: item.description,
-	// 		due_date: item.due_date,
-	// 		assigned_to: item.assigned_to,
-	// 		completed: item.completed
-	// 	}
-	// 	let transaction = new UpdateListItems_Transaction(listID, itemID, itemToDelete, opcode, AddTodoItem, DeleteTodoItem, index);
-	// 	props.tps.addTransaction(transaction);
-	// 	tpsRedo();
 
-	// };
-
-	// const editItem = async (itemID, field, value, prev) => {
-	// 	let flag = 0;
-	// 	if (field === 'completed') flag = 1;
-	// 	let listID = activeList._id;
-	// 	let transaction = new EditItem_Transaction(listID, itemID, field, prev, value, flag, UpdateTodoItemField);
-	// 	props.tps.addTransaction(transaction);
-	// 	tpsRedo();
-
-	// };
-
-	// const reorderItem = async (itemID, dir) => {
-	// 	let listID = activeList._id;
-	// 	let transaction = new ReorderItems_Transaction(listID, itemID, dir, ReorderTodoItems);
-	// 	props.tps.addTransaction(transaction);
-	// 	tpsRedo();
-
-	// };
-
-	// const createNewList = async () => {
-	// 	let list = {
-	// 		_id: '',
-	// 		name: 'Untitled',
-	// 		owner: props.user._id,
-	// 		items: [],
-	// 		sortRule: 'task',
-	// 		sortDirection: 1
-	// 	}
-	// 	const { data } = await AddTodolist({ variables: { todolist: list }, refetchQueries: [{ query: GET_DB_TODOS }] });
-	// 	if(data) {
-	// 		loadTodoList(data.addTodolist);
-	// 	} 
-
-	// };
-	// const deleteList = async (_id) => {
-	// 	DeleteTodolist({ variables: { _id: _id }, refetchQueries: [{ query: GET_DB_TODOS }] });
-	// 	loadTodoList({});
-	// };
-
-	// const updateListField = async (_id, field, value, prev) => {
-	// 	let transaction = new UpdateListField_Transaction(_id, field, prev, value, UpdateTodolistField);
-	// 	props.tps.addTransaction(transaction);
-	// 	tpsRedo();
-
-	// };
-
-	// const handleSetActive = (_id) => {
-	// 	const selectedList = todolists.find(todo => todo._id === _id);
-	// 	loadTodoList(selectedList);
-	// };
-
-	const setShowLogin = () => {
-		// toggleShowDelete(false);
+	const setShowLogin = () => {		
 		toggleShowCreate(false);
 		toggleShowUpdate(false);
 		toggleShowCreateRegion(false);
 		toggleShowLogin(!showLogin);
-		
 	};
 
-	const setShowCreate = () => {
-		// toggleShowDelete(false);
+	const setShowCreate = () => {		
 		toggleShowLogin(false);
 		toggleShowUpdate(false);
 		toggleShowCreateRegion(false);
 		toggleShowCreate(!showCreate);
-		
 	};
 
-	// const setShowDelete = () => {
-	// 	toggleShowCreate(false);
-	// 	toggleShowLogin(false);
-	// 	toggleShowUpdate(false);
-	// 	toggleShowDelete(!showDelete);
-	// };
-
 	const setShowUpdate = () => {
-		toggleShowCreate(false);
-		// toggleShowDelete(false);
+		toggleShowCreate(false);		
 		toggleShowLogin(false);
 		toggleShowCreateRegion(false);
 		toggleShowUpdate(!showUpdate);
-		
 	}
 
 	const setShowCreateRegion = () => {
-		toggleShowCreate(false);
-		// toggleShowDelete(false);
+		toggleShowCreate(false);		
 		toggleShowLogin(false);
 		toggleShowUpdate(false);
 		toggleShowCreateRegion(!showCreateRegion);
 	}
 
-	// const sort = (criteria) => {
-	// 	let prevSortRule = sortRule;
-	// 	setSortRule(criteria);
-	// 	let transaction = new SortItems_Transaction(activeList._id, criteria, prevSortRule, sortTodoItems);
-	// 	console.log(transaction)
-	// 	props.tps.addTransaction(transaction);
-	// 	tpsRedo();
+	let name = "";
+	if (auth) {
+		name = userInfo.name;
+	}
 
-	// }
-
-	
 	return (
-		<WLayout wLayout="header">
-			<WLHeader>
-				<WNavbar className="navbar">
-					<ul>
-						<WNavItem>
-							<Logo className='logo' />
-						</WNavItem>
-					</ul>
-					<ul>
-						<NavbarOptions
-							fetchUser={props.fetchUser} auth={auth}
-							setShowCreate={setShowCreate} setShowLogin={setShowLogin}
-							userInfo={userInfo} setShowUpdate={setShowUpdate}
-						/>
-					</ul>
-				</WNavbar>
-			</WLHeader>
+		<BrowserRouter>
+			<WLayout wLayout="header">
+				<WLHeader>
+					<WNavbar className="navbar">
+						<ul>
+							<WNavItem>
+								<Logo className='logo' />
+							</WNavItem>
+						</ul>
+						<ul>
+							<NavbarOptions
+								fetchUser={props.fetchUser} auth={auth}
+								setShowCreate={setShowCreate} setShowLogin={setShowLogin}
+								userInfo={userInfo} setShowUpdate={setShowUpdate}
 
-			{
-				auth ?
-					<div className="container-secondary">
-						<WLMain className="firstMapPage">
-							<WLayout wLayout='header-footer'>
-								<WLHeader className='firstMapPageHeader'>
-									{userInfo.name}'s maps
-								</WLHeader>
-								<WRow>
-									<WCol size='6'>
-									<MapPageContents
-										userInfo={userInfo}
-										auth={auth}
-										rootRegions={rootRegions}
-										createNewRootRegion={createNewRootRegion}
-										updateRootRegion={updateRootRegion}
+							/>
+						</ul>
+					</WNavbar>
+				</WLHeader>
 
-									/>
-									</WCol>
-									<WCol size ='6'>
-										<img src={globeImage} />
-									</WCol>
-								</WRow>
-
-								<WLFooter>
+				{
+					auth ?
+						<Redirect exact from='/home' to={{ pathname: '/home/maps' }} />
+						:
+						<Redirect exact from='/home' to={{ pathname: '/home' }} />
+				}
+				<Switch>
+					<Route
+						exact path='/home'
+						name='welcome'
+						render={() =>
+							<div className="container-secondary">
+								<WLMain className='globeImage'>
 									<WRow>
-										<WCol size='6'>
-										</WCol>
-
-										<WCol size='6'>
-											<WButton className='create-button' onClick={() => {setShowCreateRegion()}}>Create New Map</WButton>
+										<WCol size='12'>
+											<img src={globeImage} />
 										</WCol>
 									</WRow>
-								</WLFooter>
-							</WLayout>
-						</WLMain>
-					</div>
-					:
-					<div className="container-secondary">
-						<WLMain className='globeImage'>
-							<WRow>
-								<WCol size='12'>
-									<img src={globeImage} />
-								</WCol>
-							</WRow>
-							<div className="modal-spacer">&nbsp;</div>
-							<div className="modal-spacer">&nbsp;</div>
-							<WRow>
-								<WCol size='12' className='welcome-text'>
-									Welcome To The World Data Mapper
+									<div className="modal-spacer">&nbsp;</div>
+									<div className="modal-spacer">&nbsp;</div>
+									<WRow>
+										<WCol size='12' className='welcome-text'>
+											Welcome To The World Data Mapper
 							</WCol>
 
-							</WRow>
-						</WLMain>
-					</div>
-			}
-
-			{/* <WLSide side="left">
-				<WSidebar>
-					{
-						activeList ? 
-							<SidebarContents
-								listIDs={SidebarData} 				activeid={activeList._id} auth={auth}
-								handleSetActive={handleSetActive} 	createNewList={createNewList}
-								updateListField={updateListField} 	key={activeList._id}
-							/>
-							:
-							<></>
-					}
-				</WSidebar>
-			</WLSide>
-			<WLMain>
-				{
-					auth ? 
-					
-							<div className="container-secondary">
-								<MainContents
-									addItem={addItem} 				deleteItem={deleteItem}
-									editItem={editItem} 			reorderItem={reorderItem}
-									setShowDelete={setShowDelete} 	undo={tpsUndo} redo={tpsRedo}
-									activeList={activeList} 		setActiveList={loadTodoList}
-									canUndo={canUndo} 				canRedo={canRedo}
-									sort={sort}
-								/>
+									</WRow>
+								</WLMain>
 							</div>
-						:
-							<div className="container-secondary" />
+
+						}
+					/>
+
+					{/* <Route path='/home/maps/spreadsheet'/> */}
+
+					<Route
+						exact path='/home/maps'
+						name='maps'
+						render={() =>
+							<div className="container-secondary">
+								<WLMain className="firstMapPage">
+									<WLayout wLayout='header-footer'>
+										<WLHeader className='firstMapPageHeader'>
+											{name}'s maps
+										</WLHeader>
+										<WRow>
+											<WCol size='6'>
+												<MapPageContents
+													userInfo={userInfo}
+													reloadRegions={refetch}
+													auth={auth}
+													rootRegionsData={rootRegionsData}
+													// setShowDelete={setShowDelete}
+													deleteRootRegion={deleteRootRegion}
+													
+													updateRootRegion={updateRootRegion}
+
+												/>
+											</WCol>
+											<WCol size='6'>
+												<img src={globeImage} />
+											</WCol>
+										</WRow>
+
+										<WLFooter>
+											<WRow>
+												<WCol size='6'>
+												</WCol>
+
+												<WCol size='6'>
+													<WButton className='create-button' onClick={() => { setShowCreateRegion() }}>Create New Map</WButton>
+												</WCol>
+											</WRow>
+										</WLFooter>
+									</WLayout>
+								</WLMain>
+							</div>
+						}
+					/>
+				</Switch>
+
+				{
+					showCreate && (<CreateAccount fetchUser={props.fetchUser} setShowCreate={setShowCreate}  />)
 				}
 
-			</WLMain> */}
+				{
+					showLogin && (<Login fetchUser={props.fetchUser} setShowLogin={setShowLogin} reloadRegions={refetch} />)
+				}
 
-			{/* {
-				showDelete && (<Delete deleteList={deleteList} activeid={activeList._id} setShowDelete={setShowDelete} />)
-			} */}
+				{
+					showUpdate && (<UpdateAccount userInfo={userInfo} fetchUser={props.fetchUser} setShowUpdate={setShowUpdate} />)
+				}
 
-			{
-				showCreate && (<CreateAccount fetchUser={props.fetchUser} setShowCreate={setShowCreate} />)
-			}
+				{
+					showCreateRegion && (<CreateRegion fetchUser={props.fetchUser} createNewRootRegion={createNewRootRegion} setShowCreateRegion={setShowCreateRegion} reloadRegions={refetch} />)
+				}
 
-			{
-				showLogin && (<Login fetchUser={props.fetchUser} setShowLogin={setShowLogin} />)
-			}
-
-			{
-				showUpdate && (<UpdateAccount userInfo={userInfo} fetchUser={props.fetchUser} setShowUpdate={setShowUpdate} />)
-			}
-
-			{
-				showCreateRegion && (<CreateRegion fetchUser={props.fetchUser} createNewRootRegion={createNewRootRegion} setShowCreateRegion={setShowCreateRegion} />)
-			}
-
-		</WLayout>
+			</WLayout>
+		</BrowserRouter>
 	);
 };
 

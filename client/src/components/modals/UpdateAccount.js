@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UPDATE_ACCOUNT } from '../../cache/mutations';
 import { useMutation } from '@apollo/client';
+import { useHistory} from 'react-router-dom';
 
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
 
@@ -8,7 +9,6 @@ const UpdateAccount = (props) => {
 	const [input, setInput] = useState({ email: '', password: '', name: '', id: props.userInfo._id });
 	const [loading, toggleLoading] = useState(false);
 	const [UpdateAccount] = useMutation(UPDATE_ACCOUNT);
-
 
 	const updateInput = (e) => {
 		const { name, value } = e.target;
@@ -34,6 +34,8 @@ const UpdateAccount = (props) => {
 			else {
 				props.fetchUser();
 				props.setShowUpdate(false);
+				
+
 			}
 			return
 		}
@@ -65,20 +67,20 @@ const UpdateAccount = (props) => {
 						<div className="modal-spacer">&nbsp;</div>
 
 						<WRow className="modal-buttons-row">
-							<WCol size='1.5'></WCol>
+							<WCol size='1'></WCol>
 							<WCol size='4'>
 								<WButton className="modal-button" onClick={handleUpdateAccount} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
 									Update
 								</WButton>
 							</WCol>
 
-							<WCol size='1'></WCol>
+							<WCol size='2'></WCol>
 							<WCol size='4'>
 								<WButton className="modal-button cancel-button" onClick={() => props.setShowUpdate(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
 									Cancel
 								</WButton>
 							</WCol>
-							<WCol size='1.5'></WCol>
+							<WCol size='1'></WCol>
 						</WRow>
 					</WMMain>
 			}

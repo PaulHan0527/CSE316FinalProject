@@ -35,7 +35,7 @@ module.exports = {
             const objectId = new ObjectId();
             const { id, name, capital, leader, landmarks, parentId, owner, rootRegion } = region;
             const newRegion = new Region({
-                _id: ObjectId,
+                _id: objectId,
                 name: name,
                 capital: capital,
                 leader: leader,

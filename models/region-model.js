@@ -11,12 +11,10 @@ const regionSchema = new Schema(
             required: true
         },
         capital: {
-            type: String,
-            required: true
+            type: String
         },
         leader: {
-            type: String,
-            required: true
+            type: String
         },
         landmarks: {
             type: [String],
@@ -35,7 +33,8 @@ const regionSchema = new Schema(
             type: Boolean,
             required: true
         }
-    }
+    },
+	{ timestamps: true }
 );
 
 const Region = model('Region', regionSchema);

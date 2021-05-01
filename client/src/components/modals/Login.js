@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { LOGIN } from '../../cache/mutations';
 import { useMutation } from '@apollo/client';
+import { useHistory, withRouter} from "react-router-dom";
 
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WCol, WRow } from 'wt-frontend';
 
@@ -10,6 +11,7 @@ const Login = (props) => {
 	const [showErr, displayErrorMsg] = useState(false);
 	const errorMsg = "Email/Password not found.";
 	const [Login] = useMutation(LOGIN);
+	let history = useHistory();
 
 	const updateInput = (e) => {
 		const { name, value } = e.target;
@@ -27,8 +29,10 @@ const Login = (props) => {
 		}
 		if (data) {
 			props.fetchUser();
-			toggleLoading(false)
-			props.setShowLogin(false)
+			props.reloadRegions();
+			toggleLoading(false);
+			props.setShowLogin(false);
+			history.push('/home/maps');
 		};
 	};
 
@@ -54,19 +58,19 @@ const Login = (props) => {
 								: <div className='modal-error'>&nbsp;</div>
 						}
 						<WRow>
-						<WCol size='1.5'></WCol>
+						<WCol size='1'></WCol>
 							<WCol size="4">
 								<WButton className="modal-button" onClick={handleLogin} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
 									Login
 								</WButton>
 							</WCol>
-							<WCol size='1'></WCol>
+							<WCol size='2'></WCol>
 							<WCol size='4'>
 								<WButton className="modal-button cancel-button" onClick={() => props.setShowLogin(false)} span clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded">
 									Cancel
 								</WButton>
 							</WCol>
-							<WCol size='1.5'></WCol>
+							<WCol size='1'></WCol>
 						</WRow>
 					</WMMain >
 			}
