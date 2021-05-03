@@ -139,7 +139,13 @@ const Homescreen = (props) => {
 
 
 	const clickedRegion = async (_id, name) => {
-		setActiveRegion({ _id: _id, name: name });
+		const { data } = await UpdateRegion({variables : { field:"name", value: name, _id: _id}});
+		if( data) {
+			refetch();
+			setActiveRegion({ _id: _id, name: name });
+			console.log(data);
+		}
+		
 	}
 
 	const createNewRootRegion = async (name) => {
@@ -248,7 +254,7 @@ const Homescreen = (props) => {
 				<WLHeader>
 					<WNavbar className="navbar">
 						<WRow>
-							<WCol size='4'>
+							<WCol size='3'>
 								<div>
 									<WNavItem>
 										<Logo className='logo'

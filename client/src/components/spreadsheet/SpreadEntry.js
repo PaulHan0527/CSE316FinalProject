@@ -62,7 +62,7 @@ const SpreadEntry = (props) => {
 
     const handleRegionClick = () => {
         let string = '/home/maps/' + props._id;
-        props.clickedRegion(props._id, props.name);
+        props.setActiveRegion({name: props.name, _id:props._id});
         let newArray = props.path;
         newArray.push(props.name);
         newArray.push(props._id);
