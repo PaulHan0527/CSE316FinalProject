@@ -39,8 +39,8 @@ export const LOGOUT = gql`
 `;
 
 export const ADD_REGION = gql`
-	mutation AddRegion($region: RegionInput!) {
-		addRegion(region: $region) {
+	mutation AddRegion($region: RegionInput!, $updateParent_Id: String!) {
+		addRegion(region: $region, updateParent_Id: $updateParent_Id) {
 			_id
 			name
 			capital
@@ -49,13 +49,28 @@ export const ADD_REGION = gql`
 			parentId
 			owner
 			rootRegion
+			childRegionIds
 		}
 	}
 `;
 
 export const DELETE_REGION = gql`
-	mutation DeleteRegion($_id: String!) {
-		deleteRegion(_id: $_id)
+	mutation DeleteRegion($_id: String!, $updateParent_Id: String!) {
+		deleteRegion(_id: $_id, updateParent_Id: $updateParent_Id)
 	}
 
 `;
+
+export const UPDATE_REGION = gql`
+	mutation UpdateRegion($_id: String!, $field: String!, $value: String!) {
+		updateRegion(_id: $_id, field: $field, value: $value)
+	}
+
+`
+
+export const UPDATE_REGION_ARRAY = gql`
+	mutation UpdateRegionArray($_id: String!, $field: String!, $value: [String]) {
+		updateRegionArray(_id: $_id, field: $field, value: $value)
+	}
+
+`

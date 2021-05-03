@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { WModal, WMHeader, WMMain, WMFooter, WButton, WInput, WRow, WCol } from 'wt-frontend';
+import { useHistory } from 'react-router-dom';
 
 const CreateRegion = (props) => {
     const [input, setInput] = useState({ name: '' });
+    let history = useHistory();
 
     const handleCreateRegion = async () => {
         if (input.name) {
             props.createNewRootRegion(input.name);
-            props.reloadRegions();
+            // props.reloadRegions();
             props.setShowCreateRegion();
+
         }
         else {
             alert("Please enter the name of the map.")

@@ -24,7 +24,7 @@ const cache = new InMemoryCache({
 		},
 		Query: {
 			fields: {
-				getRootRegions: {
+				getAllRegions: {
 					merge(existing, incoming){
 						return incoming
 					}

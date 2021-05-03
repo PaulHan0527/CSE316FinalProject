@@ -4,6 +4,18 @@ export class jsTPS_Transaction {
     doTransaction() {};
     undoTransaction () {};
 }
+
+
+// export class UpdateRegions_Transaction extends jsTPS_Transaction {
+//     constructor()
+
+//     async doTransaction() {
+
+//     }
+//     async undoTransaction() {
+
+//     }
+// }
 // /*  Handles list name changes, or any other top level details of a todolist that may be added   */
 // export class UpdateListField_Transaction extends jsTPS_Transaction {
 //     constructor(_id, field, prev, update, callback) {

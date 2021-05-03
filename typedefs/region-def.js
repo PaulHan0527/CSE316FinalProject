@@ -10,16 +10,17 @@ const typeDefs = gql`
         parentId: String!
         owner: String!
         rootRegion: Boolean!
+        childRegionIds: [String]
     }
     extend type Query {
-        getRootRegions : [Region]
+        getAllRegions : [Region]
         getRegionById(_id: String!) : Region
-        getAllChildRegionsById(_id: String!) : [Region] 
     }
     extend type Mutation {
-        addRegion(region: RegionInput!) : Region
-        deleteRegion(_id: String!) : Boolean
+        addRegion(region: RegionInput!, updateParent_Id: String!) : Region
+        deleteRegion(_id: String!, updateParent_Id: String!) : Boolean
         updateRegion(_id: String!, field: String!, value: String!) : String
+        updateRegionArray(_id: String!, field: String!, value:[String]) : [String]
     }
     input FieldInput {
         _id: String
@@ -35,6 +36,7 @@ const typeDefs = gql`
         parentId: String
         owner: String
         rootRegion: Boolean
+        childRegionIds: [String]
     }
 `;
 

@@ -12,10 +12,14 @@ const MapPageContents = (props) => {
                 props.rootRegionsData &&  
                 props.rootRegionsData.map(entry => (
                     <MapPageEntry 
-                        // renameRegion={} deleteRegion={}
+                        renameRootRegion={props.renameRootRegion}
                         reloadRegions={props.reloadRegions}
                         deleteRootRegion={props.deleteRootRegion}
                         name={entry.name} key={entry._id} _id={entry._id}
+                        clickedRegion={props.clickedRegion}
+                        setActiveRegion={props.setActiveRegion}
+                        path={props.path} setPath={props.setPath}
+													
                         
                     />
                 ))

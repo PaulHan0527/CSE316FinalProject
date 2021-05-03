@@ -17,8 +17,7 @@ const regionSchema = new Schema(
             type: String
         },
         landmarks: {
-            type: [String],
-            required: true
+            type: [String]
         },
         parentId: {
             type: String,
@@ -32,6 +31,9 @@ const regionSchema = new Schema(
         rootRegion: {
             type: Boolean,
             required: true
+        },
+        childRegionIds : {
+            type: [String]
         }
     },
 	{ timestamps: true }

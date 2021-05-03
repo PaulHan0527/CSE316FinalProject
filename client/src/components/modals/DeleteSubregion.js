@@ -2,12 +2,11 @@ import React from 'react';
 
 import { WModal, WMHeader, WMMain, WButton, WCol, WRow } from 'wt-frontend';
 
-const Delete = (props) => {
+const DeleteSubregion = (props) => {
     const handleDelete = async () => {
-        props.deleteRootRegion(props._id);
+        props.deleteRegion(props._id, props.parentId);
         props.reloadRegions();
         props.setShowDelete(false);
-        props.setActiveRegion({});
     }
 
     return (
@@ -31,7 +30,7 @@ const Delete = (props) => {
                     <WCol size='4'>
                     <WButton className="modal-button" onClick={handleDelete} clickAnimation="ripple-light" hoverAnimation="darken" shape="rounded" color="danger">
                             Delete
-				</WButton>
+				    </WButton>
                         
                     </WCol>
 
@@ -51,4 +50,4 @@ const Delete = (props) => {
     );
 }
 
-export default Delete;
+export default DeleteSubregion;

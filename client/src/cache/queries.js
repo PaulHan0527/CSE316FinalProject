@@ -12,7 +12,7 @@ export const GET_DB_USER = gql`
 
 export const GET_DB_REGIONS = gql`
 	query GetDBRegions {
-		getRootRegions {
+		getAllRegions {
 			_id
 			name
 			capital
@@ -21,10 +21,12 @@ export const GET_DB_REGIONS = gql`
 			parentId
 			owner
 			rootRegion
+			childRegionIds
 		}
 	}
 
 `
+
 
 // export const GET_DB_TODOS = gql`
 // 	query GetDBTodos {
