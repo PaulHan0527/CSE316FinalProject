@@ -1,22 +1,25 @@
 // flag , name, parent region name, region capital, leader ,# of subregions
 import React from 'react';
+import { useHistory } from 'react-router';
 import { WNavItem, WInput, WRow, WCol, WButton, WLayout } from 'wt-frontend';
 
 const RegionInfo =(props) => {
     let regionViewer;
     let parentRegion;
+    let history = useHistory();
     // console.log(props.activeRegion);
+    
     if(props.currentChildRegions.length > 0) {
         regionViewer = props.currentChildRegions.filter(entry => (entry._id === props.activeRegionViewer._id))[0];
     }
     let activeRegion = props.allRegions.filter(entry => (entry._id === props.activeRegion._id))[0];
+    
     if(activeRegion.parentId === 'root') {
         parentRegion = "Root Region"
     }
     else {
         parentRegion = props.allRegions.filter(entry => (entry._id === activeRegion.parentId))[0].name;
     }
-
     
 
     // parent Region edit , probably dropdown menu of all regions ? have to think

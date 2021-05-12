@@ -54,11 +54,11 @@ const UpdateAccount = (props) => {
 					<WMMain className='modal-main'>
 
 						<WInput
-							className="modal-input" onBlur={updateInput} name="name" wType="outlined" labelText = 'Name' labelAnimation='fixed' placeholderText={props.userInfo.name} barAnimation='border-highlight' inputType="text"
+							className="modal-input" onBlur={updateInput} name="name" wType="outlined" labelText = 'Name' labelAnimation='fixed' defaultValue={props.userInfo.name} placeholderText={props.userInfo.name} barAnimation='border-highlight' inputType="text"
 						/>
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput
-							className="modal-input" onBlur={updateInput} name="email" wType="outlined" labelText = 'Email' labelAnimation='fixed' placeholderText={props.userInfo.email} barAnimation='border-highlight' inputType="text"
+							className="modal-input" onBlur={updateInput} name="email" wType="outlined" labelText = 'Email' labelAnimation='fixed' defaultValue={props.userInfo.email} placeholderText={props.userInfo.email} barAnimation='border-highlight' inputType="text"
 						/>
 						<div className="modal-spacer">&nbsp;</div>
 						<WInput

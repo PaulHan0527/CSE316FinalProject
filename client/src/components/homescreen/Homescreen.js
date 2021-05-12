@@ -22,13 +22,7 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { WNavbar, WNavItem, WCol, WRow, WButton } from 'wt-frontend';
 import { WLayout, WLHeader, WLMain } from 'wt-frontend';
 import WLFooter from 'wt-frontend/build/components/wlayout/WLFooter';
-
-
-// import { UpdateListField_Transaction, 
-// 	SortItems_Transaction,
-// 	UpdateListItems_Transaction, 
-// 	ReorderItems_Transaction, 
-// 	EditItem_Transaction } 				from '../../utils/jsTPS';
+import { AddNewRegion_Transaction, DeleteRegion_Transaction, UpdateRegion_Transaction } from '../../utils/jsTPS'
 
 const Homescreen = (props) => {
 
@@ -49,13 +43,13 @@ const Homescreen = (props) => {
 
 
 	const auth = props.user === null ? false : true;
-	
+
 	let userInfo;
 
 	if (auth) {
 		userInfo = props.user;
 	}
-	
+
 	const [activeRegion, setActiveRegion] = useState({});
 	const [activeRegionViewer, setActiveRegionViewer] = useState({});
 	const [path, setPath] = useState([]);
@@ -78,7 +72,6 @@ const Homescreen = (props) => {
 	if (error) { console.log(error, 'error'); }
 	if (data) {
 		allRegions = data.getAllRegions;
-
 		rootRegions = allRegions.filter(root => root.rootRegion === true);
 
 		for (let root of rootRegions) {
@@ -88,34 +81,14 @@ const Homescreen = (props) => {
 
 	}
 	if (activeRegion) {
-		currentChildRegions = allRegions.filter(region => region.parentId === activeRegion._id)
+		let activeRegionInfo = allRegions.filter(region => region._id === activeRegion._id);
+		if(activeRegionInfo[0]) {
+			for(let i = 0; i < activeRegionInfo[0].childRegionIds.length; i++) {
+				let temp = allRegions.find(x => x._id === activeRegionInfo[0].childRegionIds[i]);
+				currentChildRegions.push(temp);
+			}
+		}
 	}
-
-
-
-	// NOTE: might not need to be async
-	// const reloadRegion = async (activeRegion) => {
-	// 	if (auth) {
-	// 		console.log('reload region called')
-	// 		setActiveRegion({activeRegion});
-	// 	}
-	// }
-
-
-
-	// const loadTodoList = (list) => {
-	// 	props.tps.clearAllTransactions();
-	// 	setCanUndo(props.tps.hasTransactionToUndo());
-	// 	setCanRedo(props.tps.hasTransactionToRedo());
-	// 	setActiveList(list);
-
-	// }
-
-	// const mutationOptions = {
-	// 	refetchQueries: [{ query: GET_DB_REGIONS }],
-	// 	awaitRefetchQueries: true,
-	// 	onCompleted: () => reloadRegion(activeRegion)
-	// }
 
 	const tpsUndo = async () => {
 		const ret = await props.tps.undoTransaction();
@@ -128,24 +101,27 @@ const Homescreen = (props) => {
 	const tpsRedo = async () => {
 		const ret = await props.tps.doTransaction();
 		if (ret) {
+
 			setCanUndo(props.tps.hasTransactionToUndo());
 			setCanRedo(props.tps.hasTransactionToRedo());
 		}
 	}
+
 	const [AddRegion] = useMutation(mutations.ADD_REGION);
 	const [DeleteRegion] = useMutation(mutations.DELETE_REGION);
 	const [UpdateRegion] = useMutation(mutations.UPDATE_REGION);
+	const [UpdateRegionArray] = useMutation(mutations.UPDATE_REGION_ARRAY);
 
 
 
 	const clickedRegion = async (_id, name) => {
-		const { data } = await UpdateRegion({variables : { field:"name", value: name, _id: _id}});
-		if( data) {
+		const { data } = await UpdateRegion({ variables: { field: "name", value: name, _id: _id } });
+		if (data) {
 			refetch();
 			setActiveRegion({ _id: _id, name: name });
-			console.log(data);
+			clearTransactions();
 		}
-		
+
 	}
 
 	const createNewRootRegion = async (name) => {
@@ -163,6 +139,7 @@ const Homescreen = (props) => {
 		const { data } = await AddRegion({ variables: { region: region, updateParent_Id: "root" }, refetchQueries: [{ query: GET_DB_REGIONS }] });
 		if (data) {
 			setActiveRegion({ _id: data.addRegion._id, name: data.addRegion.name });
+			props.tps.clearAllTransactions();
 			setPath([data.addRegion.name, data.addRegion._id]);
 			refetch();
 			// load it and go to region spreadsheet
@@ -186,10 +163,9 @@ const Homescreen = (props) => {
 	}
 
 	const deleteRegion = async (_id, parentId) => {
-		const { data } = await DeleteRegion({ variables: { _id: _id, updateParent_Id: parentId }, refetchQueries: [{ query: GET_DB_REGIONS }] });
-		if (data) {
-
-		}
+		let transaction = new DeleteRegion_Transaction(_id, DeleteRegion, AddRegion, parentId);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
 	}
 
 
@@ -205,11 +181,64 @@ const Homescreen = (props) => {
 			rootRegion: false,
 			childRegionIds: []
 		}
+		let regionID = region._id;
+		let transaction = new AddNewRegion_Transaction(regionID, region, AddRegion, DeleteRegion, parentId);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+	}
 
-		const { data } = await AddRegion({ variables: { region: region, updateParent_Id: parentId }, refetchQueries: [{ query: GET_DB_REGIONS }] });
-		if (data) {
+	const updateRegion = (_id, oldValue, newValue, field) => {
+		let transaction = new UpdateRegion_Transaction(_id, UpdateRegion, oldValue, newValue, field);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+	}
 
+	const sortTable = (field) => {
+		let newRegionArr = currentChildRegions;
+		let oldArr = currentChildRegions.map(x=> x._id);
+		if(field === 'name') {
+			let sorted = true;
+			for(let i = 0; i < newRegionArr.length - 1; i++) {
+				if(newRegionArr[i].name > newRegionArr[i+1].name) {
+					sorted = false;
+					break;
+				}
+			}
+			if(sorted) {
+				newRegionArr.reverse();
+			}
+			else newRegionArr.sort((a, b) => a.name > b.name);
 		}
+		else if (field === "capital") {
+			let sorted = true;
+			for(let i = 0; i < newRegionArr.length - 1; i++) {
+				if(newRegionArr[i].capital > newRegionArr[i+1].capital) {
+					sorted = false;
+					break;
+				}
+			}
+			if(sorted) {
+				newRegionArr.reverse();
+			}
+			else newRegionArr.sort((a, b) => a.capital > b.capital);
+		}
+		else{ // leader
+			let sorted = true;
+			for(let i = 0; i < newRegionArr.length - 1; i++) {
+				if(newRegionArr[i].leader > newRegionArr[i+1].leader) {
+					sorted = false;
+					break;
+				}
+			}
+			if(sorted) {
+				newRegionArr.reverse();
+			}
+			else newRegionArr.sort((a, b) => a.leader > b.leader);
+		}	
+		let idArray = newRegionArr.map(x => x._id);
+		let transaction = new UpdateRegion_Transaction(activeRegion._id, UpdateRegionArray, oldArr, idArray, "childRegionIds");
+		props.tps.addTransaction(transaction);
+		tpsRedo();
 	}
 
 
@@ -243,11 +272,17 @@ const Homescreen = (props) => {
 		toggleShowCreateRegion(!showCreateRegion);
 	}
 
+	const clearTransactions = () => {
+		props.tps.clearAllTransactions();
+		setCanUndo(props.tps.hasTransactionToUndo());
+		setCanRedo(props.tps.hasTransactionToRedo());
+	}
+
 	let name = "";
 	if (auth) {
 		name = userInfo.name;
 	}
-	
+
 	return (
 		<BrowserRouter>
 			<WLayout wLayout="header">
@@ -260,6 +295,8 @@ const Homescreen = (props) => {
 										<Logo className='logo'
 											auth={auth}
 											setActiveRegion={setActiveRegion}
+											tps={props.tps}
+											clearTransactions={clearTransactions}
 
 											path={path} setPath={setPath}
 										/>
@@ -270,12 +307,12 @@ const Homescreen = (props) => {
 							<WCol size='6' className='navbar-path'>
 								<ul>
 									<WNavItem>
-										<Path 
+										<Path
 											auth={auth}
 											setActiveRegion={setActiveRegion}
 											path={path} setPath={setPath}
 											setActiveRegionViewer={setActiveRegionViewer}
-											
+
 										/>
 									</WNavItem>
 								</ul>
@@ -283,7 +320,7 @@ const Homescreen = (props) => {
 
 						</WRow>
 
-						
+
 						<ul>
 							<NavbarOptions
 								fetchUser={props.fetchUser} auth={auth}
@@ -297,8 +334,8 @@ const Homescreen = (props) => {
 
 				{
 					auth ?
-						activeRegion._id ? 
-							
+						activeRegion._id ?
+
 							<Redirect exact from='/home' to={{ pathname: '/home/maps/' + activeRegion._id }} />
 							:
 							<Redirect from='/home' to={{ pathname: '/home/maps' }} />
@@ -394,33 +431,48 @@ const Homescreen = (props) => {
 									reloadRegions={refetch}
 									currentChildRegions={currentChildRegions}
 									deleteRegion={deleteRegion}
-									clickedRegion={clickedRegion}
+									
 									setActiveRegion={setActiveRegion}
 									setActiveRegionViewer={setActiveRegionViewer}
 									allRegions={allRegions}
 
 									path={path}
 									setPath={setPath}
+
+									canUndo={canUndo}
+									canRedo={canRedo}
+									undo={tpsUndo}
+									redo={tpsRedo}
+									clearTransactions={clearTransactions}
+
+									updateRegion={updateRegion}
+									sortTable={sortTable}
 								/>
 							</div>
 						}
 					/>
-					
-					
+
+
 					<Route
-						path='/home/region/'
+						path='/home/region/:id'
 						name="region_viewer"
 						render={() =>
 							<div className="primary-container">
-								<RegionMain 
+								<RegionMain
 									allRegions={allRegions}
 									currentChildRegions={currentChildRegions}
 									activeRegion={activeRegion}
 									setActiveRegion={setActiveRegion}
 									activeRegionViewer={activeRegionViewer}
 									setActiveRegionViewer={setActiveRegionViewer}
-								
-								
+
+									canUndo={canUndo}
+									canRedo={canRedo}
+									undo={tpsUndo}
+									redo={tpsRedo}
+									clearTransactions={clearTransactions}
+
+
 								/>
 							</div>
 						}

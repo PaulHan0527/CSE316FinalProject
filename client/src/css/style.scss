@@ -191,13 +191,11 @@ html, body {
 
 .table-header-button {
     background-color: var(--primary);
-    transition: 0.1s ease-in-out;
     color: var(--light-gray);
 }
 
 .table-header-button-disabled {
     background-color: var(--primary);
-    transition: 0.1s ease-in-out;
     color: var(--warm-black);
 }
 
@@ -230,6 +228,14 @@ html, body {
     font-size: larger;
     font-weight: bold;
     color: $text-color;
+    
+}
+.spread-entry-section-input {
+    
+    font-size: larger;
+    font-weight: bold;
+    color: $text-color;
+    padding-top: 7px;
     
 }
 
@@ -290,8 +296,8 @@ html, body {
 }
 
 .region-header-button-back {
-    padding-top: 20px;
-    padding-bottom: 19px;
+    padding-top: 12px;
+    padding-bottom: 10px;
     background-color: var(--primary);
     color: rgb(140, 171, 233);
     font-size: 17px;

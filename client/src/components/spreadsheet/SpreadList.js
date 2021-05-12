@@ -5,10 +5,6 @@ import SpreadEntry from './SpreadEntry';
 
 const SpreadList = (props) => {
 
-
-
-
-    // fix key somehow
     return (
         <>
             { props.currentChildRegions.length > 0  && props.currentChildRegions.map(entry => (
@@ -24,11 +20,14 @@ const SpreadList = (props) => {
                         deleteRegion={props.deleteRegion}
                         reloadRegions={props.reloadRegions}
                         parentId={props._id}
-                        clickedRegion={props.clickedRegion}
+                        parentName={props.name}
+                        
                         setActiveRegion={props.setActiveRegion}
 
                         setActiveRegionViewer={props.setActiveRegionViewer}
                         path={props.path} setPath={props.setPath}
+                        clearTransactions={props.clearTransactions}
+                        updateRegion={props.updateRegion}
                     />
 
                 </div>

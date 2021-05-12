@@ -18,7 +18,7 @@ const typeDefs = gql`
     }
     extend type Mutation {
         addRegion(region: RegionInput!, updateParent_Id: String!) : Region
-        deleteRegion(_id: String!, updateParent_Id: String!) : Boolean
+        deleteRegion(_id: String!, updateParent_Id: String!) : Region
         updateRegion(_id: String!, field: String!, value: String!) : String
         updateRegionArray(_id: String!, field: String!, value:[String]) : [String]
     }

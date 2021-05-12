@@ -1,3 +1,4 @@
+import { GET_DB_REGIONS } from '../cache/queries';
 
 export class jsTPS_Transaction {
     constructor() {};
@@ -5,7 +6,79 @@ export class jsTPS_Transaction {
     undoTransaction () {};
 }
 
+export class AddNewRegion_Transaction extends jsTPS_Transaction {
+    constructor(regionID, region, addfunc, delfunc, parentId) {
+        super();
+        this.regionID = regionID;
+        this.region = region;
+        this.addFunction = addfunc;
+        this.deleteFunction = delfunc;
+        this.parentId = parentId;
+        
+    }
+    async doTransaction() {
+        
+        let { data } = await this.addFunction({variables: { region: this.region, updateParent_Id: this.parentId }, refetchQueries: [{ query: GET_DB_REGIONS }] })
+        this.region._id = data.addRegion._id;
+        this.regionID = data.addRegion._id;
+        if(data) return true;
+        else return false;
+    }
 
+    async undoTransaction() {
+        let { data } = await this.deleteFunction({variables: { _id: this.regionID, updateParent_Id: this.parentId }, refetchQueries: [{ query: GET_DB_REGIONS }] })
+        if(data) return true;
+        else return false;
+    }
+}
+
+export class DeleteRegion_Transaction extends jsTPS_Transaction {
+    constructor(regionID, delfunc, addfunc, parentId) {
+        super();
+        this.regionID = regionID;
+        this.deleteFunction = delfunc;
+        this.addFunction = addfunc;
+        this.parentId = parentId;
+        this.region = {};
+    }
+    async doTransaction() {
+        let { data } = await this.deleteFunction({variables: { _id: this.regionID, updateParent_Id: this.parentId }, refetchQueries: [{ query: GET_DB_REGIONS }] })
+        this.region = data.deleteRegion;
+        if(data) return true;
+        else return false;
+    }
+    async undoTransaction() {
+        delete this.region.__typename;
+        let { data } = await this.addFunction({variables: { region: this.region, updateParent_Id: this.parentId }, refetchQueries: [{ query: GET_DB_REGIONS }]})
+        if(data) return true;
+        else return false;
+
+    }
+}
+
+export class UpdateRegion_Transaction extends jsTPS_Transaction {
+    constructor(regionID, updateFunc, oldValue, newValue, field) {
+        super();
+        this.regionID = regionID;
+        this.updateFunc = updateFunc;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.field = field;
+    }
+    
+    
+    async doTransaction() {
+        let { data } = await this.updateFunc({variables: {_id : this.regionID, field: this.field, value: this.newValue }, refetchQueries: [{ query: GET_DB_REGIONS }]})
+        if(data) return true;
+        else return false;
+    }
+    async undoTransaction() {
+        let { data } = await this.updateFunc({variables: {_id : this.regionID, field: this.field, value: this.oldValue }, refetchQueries: [{ query: GET_DB_REGIONS }]})
+        if(data) return true;
+        else return false;
+
+    }
+}
 // export class UpdateRegions_Transaction extends jsTPS_Transaction {
 //     constructor()
 

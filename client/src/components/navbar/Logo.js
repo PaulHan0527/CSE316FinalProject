@@ -6,8 +6,8 @@ import { useHistory } from 'react-router-dom';
 const Logo = (props) => {
     let history = useHistory();
     const handleClick = () => {
-        console.log(props.auth);
         props.setPath([]);
+        props.clearTransactions();
         if (props.auth) {
             props.setActiveRegion({});
             history.push("/home/maps")

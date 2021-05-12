@@ -27,7 +27,7 @@ const SpreadEntry = (props) => {
 
     const handleNameEdit = (e) => {
         toggleNameEdit(false);
-        const newName = e.target.value ? e.target.value : "Null Name";
+        const newName = e.target.value ? e.target.value : name;
         const prevName = name;
         if (newName !== prevName) {
             // props.editRegionName field name
@@ -41,7 +41,7 @@ const SpreadEntry = (props) => {
         const prevCapital = capital;
         if (newCapital !== prevCapital) {
             // props.editRegionName(props._id, 'name', newName, prevName);
-
+            props.updateRegion(props._id, prevCapital, newCapital, 'capital')
             props.reloadRegions();
         }
     }
@@ -51,7 +51,7 @@ const SpreadEntry = (props) => {
         const prevLeader = leader;
         if (newLeader !== prevLeader) {
             // props.editRegionName(props._id, 'name', newName, prevName);
-
+            props.updateRegion(props._id, prevLeader, newLeader, 'leader')
             props.reloadRegions();
         }
     }
@@ -63,6 +63,7 @@ const SpreadEntry = (props) => {
     const handleRegionClick = () => {
         let string = '/home/maps/' + props._id;
         props.setActiveRegion({name: props.name, _id:props._id});
+        props.clearTransactions();
         let newArray = props.path;
         newArray.push(props.name);
         newArray.push(props._id);
@@ -72,6 +73,7 @@ const SpreadEntry = (props) => {
 
     const handleLandmarkClick = () => {
         props.setActiveRegionViewer({name: props.name, _id:props._id});
+        props.clearTransactions();
         let string = '/home/region/' + props._id;
         history.push(string);
         
@@ -83,21 +85,39 @@ const SpreadEntry = (props) => {
                 <WButton className="spread-entry-delete" clickAnimation="ripple-light" hoverAnimation="darken" onClick={()=>{setShowDelete()}}>
                     <i className="material-icons">close</i>
                 </WButton>
+                {
+                showDelete && (<DeleteSubregion deleteRegion={props.deleteRegion} reloadRegions={props.reloadRegions} setShowDelete={setShowDelete} _id={props._id} parentId={props.parentId} parentName={props.parentName} />)
+                }
             </WCol>
             <WCol size='2'>
-                <WButton className='spread-entry-section' wType="texted" onClick={handleRegionClick}>
-                    {props.name}
-                </WButton>
+                {
+                    <WButton className='spread-entry-section' onClick={() => handleRegionClick()} wType='texted'>
+                        {props.name}
+                    </WButton>
+                }
             </WCol>
             <WCol size='2'>
-                <WButton className='spread-entry-section' wType="texted">
-                    {props.capital}
-                </WButton>
+                {
+                    editingCapital ?
+                    <WInput className='spread-entry-section-input' onBlur={handleCapitalEdit} onKeyDown={(e) => {if(e.keyCode === 13 || e.key === "Escape") handleCapitalEdit(e)}}
+                    autoFocus={true} defaultValue={capital} type='text' />
+                    :
+                    <WButton className='spread-entry-section' onClick={() => toggleCapitalEdit(!editingCapital)} wType='texted'>
+                        {props.capital}
+                    </WButton>
+                }
+                
             </WCol>
             <WCol size='2'>
-                <WButton className='spread-entry-section' wType="texted">
-                    {props.leader}
-                </WButton>
+            {
+                    editingLeader ?
+                    <WInput className='spread-entry-section-input' onBlur={handleLeaderEdit} onKeyDown={(e) => {if(e.keyCode === 13 || e.key === "Escape") handleLeaderEdit(e)}}
+                    autoFocus={true} defaultValue={leader} type='text' />
+                    :
+                    <WButton className='spread-entry-section' onClick={() => toggleLeaderEdit(!editingLeader)} wType='texted'>
+                        {props.leader}
+                    </WButton>
+                }
             </WCol>
             <WCol size='1'>
                 <WButton className='spread-entry-section' wType="texted">
@@ -108,10 +128,6 @@ const SpreadEntry = (props) => {
                 <WButton className='spread-entry-section' wType="texted" onClick={handleLandmarkClick}> 
                     {landmarkString} 
                 </WButton>
-
-                {
-                showDelete && (<DeleteSubregion deleteRegion={props.deleteRegion} reloadRegions={props.reloadRegions} setShowDelete={setShowDelete} _id={props._id} parentId={props.parentId} />)
-                }
             </WCol>
 
         </WRow>

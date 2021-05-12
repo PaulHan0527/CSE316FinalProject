@@ -34,9 +34,7 @@ const CreateAccount = (props) => {
 				alert('User with that email already registered');
 			}
 			else {
-				props.fetchUser();
 				props.setShowCreate(false);
-				history.push('/home/maps')
 			}
 			
 

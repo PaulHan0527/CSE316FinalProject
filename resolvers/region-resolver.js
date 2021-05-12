@@ -6,6 +6,7 @@ module.exports = {
         getAllRegions: async (_, __, { req }) => {
             const _id = new ObjectId(req.userId);
             if (!_id) { return ([]) };
+
             const regions = await Region.find({ owner: _id }).sort({ updatedAt: 'descending' });
             if (regions) {
                 return (regions);
@@ -24,7 +25,14 @@ module.exports = {
 
         addRegion: async (_, args) => {
             const { region, updateParent_Id } = args;
-            const objectId = new ObjectId();
+            let objectId;
+            if (region._id) {
+                objectId = new ObjectId(region._id);
+            }
+            else {
+                objectId = new ObjectId();
+            }
+
             const { id, name, capital, leader, landmarks, parentId, owner, rootRegion, childRegionIds } = region;
 
             const newRegion = new Region({
@@ -44,43 +52,62 @@ module.exports = {
             }
             else {
                 const checkId = new ObjectId(updateParent_Id);
-                const parent = await Region.findOne({_id: checkId});
+                const parent = await Region.findOne({ _id: checkId });
                 let newArray = parent.childRegionIds;
                 newArray.push(newRegion._id);
-                const parentUpdate = await Region.updateOne({_id: checkId}, {childRegionIds : newArray});
+                const parentUpdate = await Region.updateOne({ _id: checkId }, { childRegionIds: newArray });
                 if (updated && parentUpdate) return updated;
 
             }
 
-            
+
         },
 
         deleteRegion: async (_, args) => {
             const { _id, updateParent_Id } = args;
             const objectId = new ObjectId(_id);
-            // delete all of its child regions and update its parent childRegions
-            if(updateParent_Id === "root") {
-                // while do everything
+            const found = await Region.findOne({ _id: objectId });
+
+            if (updateParent_Id === 'root') {
+                const deleted = await Region.deleteOne({ _id: objectId });
+                return found;
+
             }
             else {
-                
+                const deletedSub = await Region.deleteOne({ _id: objectId });
+
+                const parent = await Region.findOne({ _id: updateParent_Id });
+                if (parent) {
+                    let childRegionArray = parent.childRegionIds;
+                    for (let i = 0; i < childRegionArray.length; i++) {
+                        if (childRegionArray[i] === _id) {
+                            childRegionArray.splice(i, 1);
+                            i--;
+                        }
+                    }
+                    const updateParent = await Region.updateOne({ _id: updateParent_Id }, { childRegionIds: childRegionArray });
+
+                    // here is where recursively delete everything
+                }
+                return found;
+
             }
-            
-            
-            
-            const deleted = await Region.deleteOne({ _id: objectId });
-            
 
 
-            if (deleted) return true;
-            else return false;
+
+
+
+
+
+
+
         },
 
         updateRegion: async (_, args) => {
             const { field, value, _id } = args;
             const objectId = new ObjectId(_id);
 
-
+            
             const updated = await Region.updateOne({ _id: objectId }, { [field]: value });
             if (updated) return value;
             else return "";

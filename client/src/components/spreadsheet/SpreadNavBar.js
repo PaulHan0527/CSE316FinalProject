@@ -8,16 +8,18 @@ const SpreadNavBar = (props) => {
 
     const handleAddRegion = () => {
         props.createNewRegion(props.parentId);
+        
     }
 
     const handleLandmarkClick = () => {
         // console.log(props.parentId);
         props.setActiveRegionViewer({name: props.name, _id: props.parentId});
+        props.clearTransactions();
         let string = "/home/region/" + props.parentId;
         history.push(string);
 
     }
-
+    
 
     return (
         <WRow>
@@ -26,10 +28,10 @@ const SpreadNavBar = (props) => {
                 <WButton className="table-header-button-add" clickAnimation="ripple-light" hoverAnimation="darken" onClick={handleAddRegion}>
                     <i className="material-icons">add</i>
                 </WButton>
-                <WButton className="table-header-button-disabled"  clickAnimation="ripple-light" hoverAnimation="darken">
+                <WButton className={props.canUndo ? "table-header-button" : "table-header-button-disabled"} onClick={props.undo ? props.undo : null}  clickAnimation="ripple-light" hoverAnimation="darken">
                     <i className="material-icons">undo</i>
                 </WButton>
-                <WButton className="table-header-button-disabled" clickAnimation="ripple-light" hoverAnimation="darken">
+                <WButton className={props.canRedo ? "table-header-button" : "table-header-button-disabled"} onClick={props.redo ? props.redo : null} clickAnimation="ripple-light" hoverAnimation="darken">
                     <i className="material-icons">redo</i>
                 </WButton>
                 </div>

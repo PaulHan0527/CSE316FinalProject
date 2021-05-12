@@ -4,6 +4,9 @@ import { WButton, WRow, WCol } from 'wt-frontend';
 
 const SpreadHeader = (props) => {
 
+    const handleSort = (field) => {
+        props.sort(field);
+    }
 
     // onclick events handling is needed for sort
 
@@ -14,17 +17,17 @@ const SpreadHeader = (props) => {
                     
                 </WCol>
                 <WCol size='2'>
-                    <WButton className='table-header-section' wType="texted"> 
+                    <WButton className='table-header-section' wType="texted" onClick={() => handleSort('name')}> 
                         Name
                     </WButton>
                 </WCol>
                 <WCol size='2'>
-                    <WButton className='table-header-section' wType="texted">
+                    <WButton className='table-header-section' wType="texted" onClick={() => handleSort('capital')}>
                         Capital
                     </WButton>
                 </WCol>
                 <WCol size='2'>
-                    <WButton className='table-header-section' wType="texted">
+                    <WButton className='table-header-section' wType="texted" onClick={() => handleSort('leader')}>
                         Leader
                     </WButton>
                 </WCol>

@@ -11,6 +11,7 @@ const CreateRegion = (props) => {
             props.createNewRootRegion(input.name);
             // props.reloadRegions();
             props.setShowCreateRegion();
+            history.push('/home/maps/');
 
         }
         else {
