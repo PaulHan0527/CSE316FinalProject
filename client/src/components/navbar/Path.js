@@ -10,6 +10,7 @@ const Path = (props) => {
 
     return (
         <>
+        <div className="path-links">
         {    nameEntries && nameEntries.map((entry, index) => (
             <PathEntry
                 key={index}
@@ -19,10 +20,15 @@ const Path = (props) => {
                 setPath={props.setPath}
                 setActiveRegion={props.setActiveRegion}
                 setActiveRegionViewer={props.setActiveRegionViewer}
+                clearTransactions={props.clearTransactions}
+                activeRegion={props.activeRegion}
+                activeRegionViewer={props.activeRegionViewer}
+
             />
         ))
             
         }
+        </div>
         </>
     );
 };

@@ -11,6 +11,7 @@ const PathEntry = (props) => {
     const handleClick = () => {
         let newArr = props.path.slice(0, (props.index+1) * 2);
         props.setActiveRegionViewer({});
+        props.clearTransactions();
         if(newArr.length === props.path.length) {
             let string = "/home/maps/" + props.path[(props.index + 1) * 2 -1]
             props.setPath(newArr);
@@ -31,7 +32,7 @@ const PathEntry = (props) => {
     return (
         <div>
             {
-                props.path[0] === props.name ? null :<span className="material-icons">
+                props.path[0] === props.name ? null : <span className="material-icons">
                 arrow_forward
             </span>
             }

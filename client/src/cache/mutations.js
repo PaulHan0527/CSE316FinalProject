@@ -39,8 +39,8 @@ export const LOGOUT = gql`
 `;
 
 export const ADD_REGION = gql`
-	mutation AddRegion($region: RegionInput!, $updateParent_Id: String!) {
-		addRegion(region: $region, updateParent_Id: $updateParent_Id) {
+	mutation AddRegion($region: RegionInput!, $updateParent_Id: String!, $index: Int!) {
+		addRegion(region: $region, updateParent_Id: $updateParent_Id, index: $index) {
 			_id
 			name
 			capital
@@ -83,4 +83,10 @@ export const UPDATE_REGION_ARRAY = gql`
 		updateRegionArray(_id: $_id, field: $field, value: $value)
 	}
 
+`
+
+export const CHANGE_PARENT = gql`
+	mutation ChangeParent($_id: String!, $oldParent_id: String!, $newParent_id: String!) {
+		changeParent(_id: $_id, oldParent_id: $oldParent_id, newParent_id: $newParent_id)
+	}
 `

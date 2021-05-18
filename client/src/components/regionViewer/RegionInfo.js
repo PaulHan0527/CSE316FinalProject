@@ -1,9 +1,21 @@
 // flag , name, parent region name, region capital, leader ,# of subregions
-import React from 'react';
+import React, {useState} from 'react';
 import { useHistory } from 'react-router';
 import { WNavItem, WInput, WRow, WCol, WButton, WLayout } from 'wt-frontend';
+import RegionModal from './RegionModal';
+
 
 const RegionInfo =(props) => {
+
+    function importAll(r) {
+        let images = {};
+        r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+        return images;
+    }
+
+    const images = importAll(require.context('../../utils/The World', false, /\.(png|jpe?g|svg)$/));
+
+
     let regionViewer;
     let parentRegion;
     let history = useHistory();
@@ -20,8 +32,8 @@ const RegionInfo =(props) => {
     else {
         parentRegion = props.allRegions.filter(entry => (entry._id === activeRegion.parentId))[0].name;
     }
-    
 
+    const [showModal, setShowModal] = useState(false);
     // parent Region edit , probably dropdown menu of all regions ? have to think
 
     return (
@@ -34,8 +46,11 @@ const RegionInfo =(props) => {
 
             </WCol>
             <WCol size='7'>
-                <div className="image-holder">
-                image holder : TBD
+                <div>
+                 {images[`${props.activeRegionViewer.name} Flag.png`] === undefined ?
+                        <img className="flag-entries-viewer" src={images[`ImageNotFound.jpg`].default} alt="Flag Not Found" /> :
+                        <img className="flag-entries-viewer" src={images[`${props.activeRegionViewer.name} Flag.png`].default} alt="Flag Not Found" />
+                    }
                 </div>
             </WCol>
             <WCol size="4">
@@ -62,11 +77,12 @@ const RegionInfo =(props) => {
                 
             </WCol>
             <WCol size = '2'>
-                <WButton className="edit-button"  clickAnimation="ripple-light" hoverAnimation="darken" color='default'>
+                <WButton className="edit-button"  clickAnimation="ripple-light" hoverAnimation="darken" color='default' onClick={() => setShowModal(!showModal)}>
                     <i className="material-icons">edit</i>
                 </WButton>
             </WCol>
         </WRow>
+        
         <WRow>
             <WCol size='5' className="region-info">
                 Region Capital: 
@@ -91,7 +107,18 @@ const RegionInfo =(props) => {
                 {regionViewer ? regionViewer.childRegionIds.length : props.currentChildRegions.length}
             </WCol>
         </WRow>
-        
+        {
+            showModal && <RegionModal 
+                    setShowModal={setShowModal} showModal={showModal}
+                    allRegions={props.allRegions}
+                    currentChildRegions={props.currentChildRegions}
+                            activeRegion={props.activeRegion}
+                            activeRegionViewer={props.activeRegionViewer}
+                            setActiveRegionViewer={props.setActiveRegionViewer}
+                            setActiveRegion={props.setActiveRegion}
+                            changeParent={props.changeParent}
+                />
+        }
         
         
         </>

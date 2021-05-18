@@ -47,6 +47,8 @@ const SpreadMain = (props) => {
                 path={props.path} setPath={props.setPath}
                 clearTransactions={props.clearTransactions}
                 updateRegion={props.updateRegion}
+
+                images = {props.images}
             />
 
         </div>

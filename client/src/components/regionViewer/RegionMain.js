@@ -2,13 +2,10 @@ import React from 'react';
 import RegionNavbar from './RegionNavbar';
 import RegionInfo from './RegionInfo';
 import RegionLandmarks from './RegionLandmarks'
-import { WNavItem, WInput, WRow, WCol, WButton, WCard, WCContent, WCMedia } from 'wt-frontend';
-import { useParams } from 'react-router';
+import { WRow, WCol } from 'wt-frontend';
 
 
 const RegionMain = (props) => {
-
-
 
 
     return (
@@ -44,6 +41,7 @@ const RegionMain = (props) => {
                             setActiveRegionViewer={props.setActiveRegionViewer}
                             setActiveRegion={props.setActiveRegion}
 
+                            changeParent={props.changeParent}
 
 
                         />
@@ -57,6 +55,10 @@ const RegionMain = (props) => {
                             activeRegionViewer={props.activeRegionViewer}
                             setActiveRegionViewer={props.setActiveRegionViewer}
                             setActiveRegion={props.setActiveRegion}
+
+                            addLandmark={props.addLandmark}
+                            updateLandmark={props.updateLandmark}
+                            deleteLandmark={props.deleteLandmark}
 
 
 

@@ -269,8 +269,15 @@ html, body {
 
 .navbar-path {
     padding-top:  5px;
-    overflow-x : auto !important;
     
+}
+
+.path-links {
+    display: flex;
+    flex-direction: row;
+    width: 700px;
+    overflow-x: scroll;
+    scrollbar-width: thin;
 }
 .region-header-button {
     padding-top: 20px;
@@ -308,8 +315,15 @@ html, body {
 
 .region-header-button-go {
     background-color: var(--primary);
-    font-size: 30px;
+    font-size: 20px;
     font-weight: bold;
+}
+
+.region-header-button-go-enabled {
+    background-color: var(--primary);
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
 }
 
 .region-info {
@@ -344,4 +358,99 @@ html, body {
     background: black;
     background-clip: content-box;
     box-shadow: inset 0 0 0 15px var(--primary);
+}
+
+.landmark-footer {
+    height:64px;
+    background-color: rgb(85, 85, 85);
+    width: 100%;
+}
+
+.landmark-input{
+    width: 100%;
+    height: 100% !important;
+    background-color: rgb(85, 85, 85);
+    border-color:rgb(85, 85, 85);
+    color: rgb(255, 255, 255);
+    font-size: large;
+    padding-top: 10px;
+    padding-right: 5px;
+    padding-left: 10px;
+    padding-bottom: 7px;
+}
+
+.add-landmark-button {
+    height:64px;
+    color: rgb(3, 138, 32);
+}
+
+.region-landmarks-entry {
+    color: white;
+    width: 100%;
+    font-size: large;
+    padding-right: 30px;
+}
+
+.region-landmarks-entry-input {
+    color: white;
+    width: 100%;
+    
+    padding-right: 30px;
+    padding-top: 8px;
+   
+}
+
+.region-landmarks-entry:hover {
+    background-color: rgb(54, 54, 54);
+    width: 95%;
+}
+
+.landmark-entries {
+    padding-top: 20px;
+    padding-bottom: 10px;
+    height: 60px;
+    padding-left: 20px;
+}
+
+.landmark-box {
+    overflow-y: auto;
+}
+
+.region-viewer-buttons-delete {
+    padding-top: 12px;
+    background-color: black;
+    font-size: 3px;
+    color: red;
+}
+
+.region-landmarks-entry-not-direct {
+    color: rgb(100, 99, 99);
+    width: 100%;
+    font-size: large;
+    padding-right: 30px;
+}
+
+.flag-entries {
+    padding-top: 5px;
+    width: 50%;
+    height: auto;
+}
+
+.flag-entries-viewer {
+    width: 120%;
+    height : 40%;
+
+}
+
+.changeParent-main {
+    width: 600px;
+    
+    height:300px;
+    overflow-y: auto;
+}
+
+.changeParent-buttons {
+    background-color: rgb(175, 169, 169);
+    font-size: x-large;
+    width: 100%;
 }

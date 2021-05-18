@@ -17,10 +17,11 @@ const typeDefs = gql`
         getRegionById(_id: String!) : Region
     }
     extend type Mutation {
-        addRegion(region: RegionInput!, updateParent_Id: String!) : Region
+        addRegion(region: RegionInput!, updateParent_Id: String!, index: Int!) : Region
         deleteRegion(_id: String!, updateParent_Id: String!) : Region
         updateRegion(_id: String!, field: String!, value: String!) : String
         updateRegionArray(_id: String!, field: String!, value:[String]) : [String]
+        changeParent(_id: String!, oldParent_id: String!, newParent_id: String!) : Boolean
     }
     input FieldInput {
         _id: String

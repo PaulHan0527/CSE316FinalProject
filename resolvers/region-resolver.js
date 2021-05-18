@@ -24,7 +24,7 @@ module.exports = {
     Mutation: {
 
         addRegion: async (_, args) => {
-            const { region, updateParent_Id } = args;
+            const { region, updateParent_Id, index } = args;
             let objectId;
             if (region._id) {
                 objectId = new ObjectId(region._id);
@@ -54,7 +54,8 @@ module.exports = {
                 const checkId = new ObjectId(updateParent_Id);
                 const parent = await Region.findOne({ _id: checkId });
                 let newArray = parent.childRegionIds;
-                newArray.push(newRegion._id);
+                if(index < 0) newArray.push(newRegion._id);
+                else newArray.splice(index, 0, newRegion._id)
                 const parentUpdate = await Region.updateOne({ _id: checkId }, { childRegionIds: newArray });
                 if (updated && parentUpdate) return updated;
 
@@ -122,6 +123,36 @@ module.exports = {
             if (updated) return value;
             else return [""];
 
+        },
+
+        changeParent: async(_, args) => {
+            const { _id , oldParent_id, newParent_id } = args;
+            const objectId = new ObjectId(_id);
+            const objectId2 = new ObjectId(oldParent_id);
+            const objectId3 = new ObjectId(newParent_id);
+            // change the id's parentId
+            const found = await Region.findOne({_id: objectId});
+            
+            const update = await Region.updateOne({_id: objectId}, { parentId: newParent_id});
+
+            // remove child from old parent
+            const oldParent = await Region.findOne({_id: objectId2})
+            let childs = oldParent.childRegionIds;
+            let index = childs.indexOf(_id);
+            childs.splice(index, 1);
+            const updateOld = await Region.updateOne({_id: objectId2}, { childRegionIds: childs});
+
+            // add to new parent
+            const newParent = await Region.findOne({_id : objectId3});
+            let childs2 = newParent.childRegionIds;
+            childs2.push(_id);
+            const updateNew = await Region.updateOne({_id: objectId3} , {childRegionIds: childs2});
+
+            if ( update && updateOld && updateNew) {
+                return true;
+            }
+            else return false;
+           
         }
 
         // need to add here

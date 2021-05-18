@@ -22,9 +22,11 @@ import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { WNavbar, WNavItem, WCol, WRow, WButton } from 'wt-frontend';
 import { WLayout, WLHeader, WLMain } from 'wt-frontend';
 import WLFooter from 'wt-frontend/build/components/wlayout/WLFooter';
-import { AddNewRegion_Transaction, DeleteRegion_Transaction, UpdateRegion_Transaction } from '../../utils/jsTPS'
+import { AddNewRegion_Transaction, ChangeParent_Transaction, DeleteRegion_Transaction, UpdateRegion_Transaction } from '../../utils/jsTPS'
+import { supportsResultCaching } from '@apollo/client/cache/inmemory/entityStore';
 
 const Homescreen = (props) => {
+	
 
 	const keyCombination = (e, callback) => {
 		if (e.key === 'z' && e.ctrlKey) {
@@ -90,6 +92,8 @@ const Homescreen = (props) => {
 		}
 	}
 
+	
+
 	const tpsUndo = async () => {
 		const ret = await props.tps.undoTransaction();
 		if (ret) {
@@ -111,6 +115,7 @@ const Homescreen = (props) => {
 	const [DeleteRegion] = useMutation(mutations.DELETE_REGION);
 	const [UpdateRegion] = useMutation(mutations.UPDATE_REGION);
 	const [UpdateRegionArray] = useMutation(mutations.UPDATE_REGION_ARRAY);
+	const [ChangeParent] = useMutation(mutations.CHANGE_PARENT);
 
 
 
@@ -136,7 +141,7 @@ const Homescreen = (props) => {
 			rootRegion: true,
 			childRegionIds: []
 		}
-		const { data } = await AddRegion({ variables: { region: region, updateParent_Id: "root" }, refetchQueries: [{ query: GET_DB_REGIONS }] });
+		const { data } = await AddRegion({ variables: { region: region, updateParent_Id: "root", index: -1 }, refetchQueries: [{ query: GET_DB_REGIONS }] });
 		if (data) {
 			setActiveRegion({ _id: data.addRegion._id, name: data.addRegion.name });
 			props.tps.clearAllTransactions();
@@ -163,7 +168,14 @@ const Homescreen = (props) => {
 	}
 
 	const deleteRegion = async (_id, parentId) => {
-		let transaction = new DeleteRegion_Transaction(_id, DeleteRegion, AddRegion, parentId);
+		let index;
+		console.log(currentChildRegions);
+		for (let i = 0 ; i < currentChildRegions.length; i++) {
+			if(_id === currentChildRegions[i]._id) {
+				index = i;
+			}
+		}
+		let transaction = new DeleteRegion_Transaction(_id, DeleteRegion, AddRegion, parentId, index);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 	}
@@ -181,8 +193,11 @@ const Homescreen = (props) => {
 			rootRegion: false,
 			childRegionIds: []
 		}
+		console.log(activeRegion);
+		let index = currentChildRegions.length;
+		
 		let regionID = region._id;
-		let transaction = new AddNewRegion_Transaction(regionID, region, AddRegion, DeleteRegion, parentId);
+		let transaction = new AddNewRegion_Transaction(regionID, region, AddRegion, DeleteRegion, parentId, index);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
 	}
@@ -239,6 +254,64 @@ const Homescreen = (props) => {
 		let transaction = new UpdateRegion_Transaction(activeRegion._id, UpdateRegionArray, oldArr, idArray, "childRegionIds");
 		props.tps.addTransaction(transaction);
 		tpsRedo();
+	}
+
+	const addLandmark = (activeRV, value) => {
+		let region = allRegions.find(x => x._id === activeRV._id)
+		let { _id , name, capital, leader, landmarks, parentId, owner, rootRegion, childRegionIds } = region;
+		let oldArr = landmarks;
+		let newArr = [];
+		for(let i = 0; i < oldArr.length; i ++) {
+			newArr.push(oldArr[i]);
+		}
+		newArr.push(value);
+		let transaction = new UpdateRegion_Transaction(activeRV._id, UpdateRegionArray, oldArr, newArr, "landmarks");
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+	}
+
+	const updateLandmark = (activeRV, prevName, newName) => {
+		let region = allRegions.find(x => x._id === activeRV._id)
+		let { _id , name, capital, leader, landmarks, parentId, owner, rootRegion, childRegionIds } = region;
+		let oldArr = landmarks;
+		let newArr = [];
+		for(let i = 0; i < oldArr.length; i ++) {
+			if(oldArr[i] === prevName) {
+				newArr.push(newName);
+			}
+			else {
+				newArr.push(oldArr[i]);
+			}
+			
+		}
+		let transaction = new UpdateRegion_Transaction(activeRV._id, UpdateRegionArray, oldArr, newArr, "landmarks");
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+	}
+
+	const deleteLandmark = (activeRV, landmark) => {
+		let region = allRegions.find(x => x._id === activeRV._id)
+		let { _id , name, capital, leader, landmarks, parentId, owner, rootRegion, childRegionIds } = region;
+		let oldArr = landmarks;
+		let newArr = [];
+		for(let i = 0; i < oldArr.length; i ++) {
+			if(oldArr[i] !== landmark) {
+				newArr.push(oldArr[i]);
+			}
+		}
+		let transaction = new UpdateRegion_Transaction(activeRV._id, UpdateRegionArray, oldArr, newArr, "landmarks");
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+	}
+
+	const changeParent = (_id, oldParent_id, newParent_id) => {
+		console.log(_id);
+		console.log(oldParent_id);
+		console.log(newParent_id);
+		let transaction = new ChangeParent_Transaction(_id, oldParent_id ,newParent_id, ChangeParent);
+		props.tps.addTransaction(transaction);
+		tpsRedo();
+		
 	}
 
 
@@ -312,6 +385,10 @@ const Homescreen = (props) => {
 											setActiveRegion={setActiveRegion}
 											path={path} setPath={setPath}
 											setActiveRegionViewer={setActiveRegionViewer}
+											clearTransactions={clearTransactions}
+											activeRegion={activeRegion}
+											activeRegionViewer={activeRegionViewer}
+
 
 										/>
 									</WNavItem>
@@ -447,6 +524,8 @@ const Homescreen = (props) => {
 
 									updateRegion={updateRegion}
 									sortTable={sortTable}
+
+			
 								/>
 							</div>
 						}
@@ -454,7 +533,7 @@ const Homescreen = (props) => {
 
 
 					<Route
-						path='/home/region/:id'
+						path='/home/region/'
 						name="region_viewer"
 						render={() =>
 							<div className="primary-container">
@@ -471,6 +550,13 @@ const Homescreen = (props) => {
 									undo={tpsUndo}
 									redo={tpsRedo}
 									clearTransactions={clearTransactions}
+
+									addLandmark={addLandmark}
+									updateLandmark={updateLandmark}
+									deleteLandmark={deleteLandmark}
+
+									changeParent={changeParent}
+
 
 
 								/>
