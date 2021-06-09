@@ -5,7 +5,7 @@ import { WButton, WRow, WCol } from 'wt-frontend';
 const SpreadHeader = (props) => {
 
     const handleSort = (field) => {
-        props.sort(field);
+        props.sortTable(field);
     }
 
     // onclick events handling is needed for sort

@@ -15,14 +15,18 @@ const RegionNavbar = (props) => {
         canGoPrev = false;
     }
     else {
-        if(props.currentChildRegions) {
+        if(props.currentChildRegions.length !== 0) {
+            console.log(props.currentChildRegions);
             if (props.currentChildRegions[0]._id === props.activeRegionViewer._id) {
                 canGoPrev = false;
             }
             if (props.currentChildRegions[props.currentChildRegions.length - 1]._id === props.activeRegionViewer._id) {
                 canGoNext = false;
             }
-    
+        }
+        else {
+            canGoPrev = false;
+            canGoNext = false;
         }
         
     }

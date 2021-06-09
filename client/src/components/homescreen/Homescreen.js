@@ -23,7 +23,6 @@ import { WNavbar, WNavItem, WCol, WRow, WButton } from 'wt-frontend';
 import { WLayout, WLHeader, WLMain } from 'wt-frontend';
 import WLFooter from 'wt-frontend/build/components/wlayout/WLFooter';
 import { AddNewRegion_Transaction, ChangeParent_Transaction, DeleteRegion_Transaction, UpdateRegion_Transaction } from '../../utils/jsTPS'
-import { supportsResultCaching } from '@apollo/client/cache/inmemory/entityStore';
 
 const Homescreen = (props) => {
 	
@@ -54,6 +53,8 @@ const Homescreen = (props) => {
 
 	const [activeRegion, setActiveRegion] = useState({});
 	const [activeRegionViewer, setActiveRegionViewer] = useState({});
+
+	// const [currentChildRegions, setCurrentChildRegions] = useState([]);
 	const [path, setPath] = useState([]);
 	const [showLogin, toggleShowLogin] = useState(false);
 	const [showCreate, toggleShowCreate] = useState(false);
@@ -84,12 +85,19 @@ const Homescreen = (props) => {
 	}
 	if (activeRegion) {
 		let activeRegionInfo = allRegions.filter(region => region._id === activeRegion._id);
+		
 		if(activeRegionInfo[0]) {
 			for(let i = 0; i < activeRegionInfo[0].childRegionIds.length; i++) {
 				let temp = allRegions.find(x => x._id === activeRegionInfo[0].childRegionIds[i]);
 				currentChildRegions.push(temp);
 			}
 		}
+	}
+
+	const reload = async (_id) => {
+
+		let activeRegionInfo = allRegions.filter(region => region._id === _id);
+		console.log(activeRegionInfo);
 	}
 
 	
@@ -222,7 +230,10 @@ const Homescreen = (props) => {
 			if(sorted) {
 				newRegionArr.reverse();
 			}
-			else newRegionArr.sort((a, b) => a.name > b.name);
+			else {
+				// this is where to sort
+				newRegionArr.sort((a, b) => (a.name > b.name) ? 1 : -1);
+			}
 		}
 		else if (field === "capital") {
 			let sorted = true;
@@ -235,7 +246,9 @@ const Homescreen = (props) => {
 			if(sorted) {
 				newRegionArr.reverse();
 			}
-			else newRegionArr.sort((a, b) => a.capital > b.capital);
+			else {
+				newRegionArr.sort((a, b) => a.capital > b.capital ? 1 : -1);
+			}
 		}
 		else{ // leader
 			let sorted = true;
@@ -248,9 +261,12 @@ const Homescreen = (props) => {
 			if(sorted) {
 				newRegionArr.reverse();
 			}
-			else newRegionArr.sort((a, b) => a.leader > b.leader);
+			else {
+				newRegionArr.sort((a, b) => a.leader > b.leader ? 1 : -1);
+			}
 		}	
 		let idArray = newRegionArr.map(x => x._id);
+		console.log(idArray);
 		let transaction = new UpdateRegion_Transaction(activeRegion._id, UpdateRegionArray, oldArr, idArray, "childRegionIds");
 		props.tps.addTransaction(transaction);
 		tpsRedo();
@@ -305,12 +321,13 @@ const Homescreen = (props) => {
 	}
 
 	const changeParent = (_id, oldParent_id, newParent_id) => {
-		console.log(_id);
-		console.log(oldParent_id);
-		console.log(newParent_id);
+		// console.log("Current Region Id: "+_id);
+		// console.log("Old Region parent ID: "+oldParent_id);
+		// console.log("New Region Parent ID: "+newParent_id);
 		let transaction = new ChangeParent_Transaction(_id, oldParent_id ,newParent_id, ChangeParent);
 		props.tps.addTransaction(transaction);
 		tpsRedo();
+		reload(_id);
 		
 	}
 

@@ -28,7 +28,7 @@ const SpreadMain = (props) => {
             />
             <SpreadHeader
             // sort
-                sort={props.sortTable}
+                sortTable={props.sortTable}
 
             />
 
